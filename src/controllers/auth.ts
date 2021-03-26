@@ -131,31 +131,33 @@ export default class UserController {
             return;
         }
 
-        const payload = jwt.decode(token, process.env.RESET_TOKEN_SECRET);
-        const user: User | undefined = await userRepository.findOne({ id: payload._id });
-        if (!user) {
-            ctx.status = 400;
-            ctx.body = { error: 'Something wrong' };
-            return;
-        } else {
-            const hash = await argon2.hash(password);
+        const payload: Object = jwt.decode(token);
 
-            await getConnection()
-                .createQueryBuilder()
-                .update(User)
-                .set({ password: hash })
-                .where('id = :id', { id: user.id })
-                .execute();
-
-            ctx.body = {
-                user,
-                msg: 'Your password has been saved',
-            };
-        }
+        console.log(payload);
+        // const user: User | undefined = await userRepository.findOne({ id: payload._id });
+        // if (!user) {
+        //     ctx.status = 400;
+        //     ctx.body = { error: 'Something wrong' };
+        //     return;
+        // } else {
+        //     const hash = await argon2.hash(password);
+        //
+        //     await getConnection()
+        //         .createQueryBuilder()
+        //         .update(User)
+        //         .set({ password: hash })
+        //         .where('id = :id', { id: user.id })
+        //         .execute();
+        //
+        //     ctx.body = {
+        //         user,
+        //         msg: 'Your password has been saved',
+        //     };
+        // }
     }
 }
 
-const generateAccessToken = (user: { user: User }): Promise<string> => {
+const generateAccessToken = (user: { user: User }): string => {
     return jwt.sign(user, config.token.accessToken, {
         expiresIn: '1h',
     });

@@ -86,36 +86,34 @@ export default class UserController {
         }
     }
 
-    public static async updateUserData(ctx: Context): Promise<void> {
-        let x = ctx.request.body.token;
-        ctx.body = '111';
+    public static async updateUserData(ctx: Context): Promise<any> {
         const userRepository: Repository<User> = getManager().getRepository(User);
-        console.log(x);
-        // const {full_name, email, login, password} = ctx.request.body;
+        const { id } = ctx.params
+        const {full_name, email, login, password} = ctx.request.body;
 
-        // const { error } = createUserSchema.validate(ctx.request.body);
-        // if (error) {
-        //     ctx.status = 400;
-        //     ctx.body = { error: error.message };
-        // } else if (await userRepository.findOne({ email })) {
-        //     // Checking if the user is already in the database
-        //     ctx.status = 400;
-        //     ctx.body = { error: 'Email is already exist' };
-        // } else if (await userRepository.findOne({ login })) {
-        //     // Checking if the user is already in the database
-        //     ctx.status = 400;
-        //     ctx.body = { error: 'Login is already exist' };
-        // } else {
-        //     // Hash password
-        //     const hash = await argon2.hash(password);
-        //
-        //     await getConnection()
-        //         .createQueryBuilder()
-        //         .update(User)
-        //         .set({ full_name, email, login, password: hash })
-        //         .where('id = :id', { id: 17 })
-        //         .execute();
-        // }
+        const { error } = createUserSchema.validate(ctx.request.body);
+        if (error) {
+            ctx.status = 400;
+            ctx.body = { error: error.message };
+        } else if (await userRepository.findOne({ email })) {
+            // Checking if the user is already in the database
+            ctx.status = 400;
+            ctx.body = { error: 'Email is already exist' };
+        } else if (await userRepository.findOne({ login })) {
+            // Checking if the user is already in the database
+            ctx.status = 400;
+            ctx.body = { error: 'Login is already exist' };
+        } else {
+            // Hash password
+            const hash = await argon2.hash(password);
+
+            await getConnection()
+                .createQueryBuilder()
+                .update(User)
+                .set({ full_name, email, login, password: hash })
+                .where('id = :id', { id: id })
+                .execute();
+        }
     }
 
 }
