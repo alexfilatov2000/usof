@@ -11,5 +11,5 @@
   "rules": {
 
   },
-  "ignorePatterns": ["dist"]
+  "ignorePatterns": ["dist", "usof-frontend"]
 }

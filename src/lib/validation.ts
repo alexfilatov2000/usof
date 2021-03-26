@@ -21,3 +21,12 @@ export const resetSchema = Joi.object({
     password: Joi.string().min(6).required(),
     password2: Joi.ref('password'),
 });
+
+export const createUserSchema = Joi.object({
+    full_name: Joi.string().min(6).required(),
+    login: Joi.string().min(4).required(),
+    email: Joi.string().min(6).required().email(),
+    role: Joi.string().min(4).required(),
+    password: Joi.string().min(6).required(),
+    password2: Joi.ref('password'),
+});

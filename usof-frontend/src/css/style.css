@@ -1,0 +1,66 @@
+.first{
+    color: #e77489;
+    font-family: "Source Sans Pro",sans-serif;
+}
+
+.second{
+    text-align: center;
+    color: grey;
+    font-family: "Source Sans Pro",sans-serif;
+}
+
+div{
+    display: flex;
+    padding: 10px;
+    text-align: center;
+    justify-content: center;
+}
+
+
+.Em input{
+    padding: 40px 15px 15px 15px;
+    width: 40%;
+    border: 0;
+    border-bottom: 1px solid grey;
+    font-size: 20px;
+}
+
+.Em input:focus{
+    outline: none;
+}
+
+.Em label{
+    display: none;
+    outline: red;
+}
+
+.dva{
+    justify-content: space-around;
+}
+
+.three{
+    justify-content: space-around;
+}
+
+.but{
+    width: 93%;
+    padding: 20px 0;
+    margin-top: 60px;
+    border: 0;
+    background-color: #e77489;
+    color: white;
+    font-weight: bold;
+    transition: background-color 1s;
+}
+.but:hover{
+    background-color: #1e2a4f;
+}
+
+#Err{
+    margin: 0 20%;
+    font-size: 20px;
+    background-color: red;
+    font-family: Arial,sans-serif;
+    color: white;
+    font-weight: bold;
+}
