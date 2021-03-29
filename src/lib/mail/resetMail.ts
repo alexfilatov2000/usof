@@ -1,4 +1,4 @@
-import { User } from '../entity/user';
+import { User } from '../../entity/user';
 
 export const getPasswordResetURL = (token: string): string => {
     return `http://localhost:3000/password-reset/${token}`;

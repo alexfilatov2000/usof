@@ -1,14 +1,15 @@
 import Router from 'koa-router';
 import UserController from '../controllers/user';
 const userRouter = new Router();
-import { upload } from "../lib/multerOptions";
-import {authToken} from "../middleware/tokenAuth";
+import { upload } from '../lib/multerOptions';
+import { auth } from '../middleware/userAuth';
+import { adminAuth } from '../middleware/adminAuth';
 
 userRouter.get('/api/users', UserController.getAllUsers);
 userRouter.get('/api/users/:id', UserController.getUserById);
-userRouter.post('/api/users', UserController.createUser);
-userRouter.post('/api/users/avatar', upload.single('upload'), UserController.setAvatar);
-userRouter.patch('/api/users/:id', authToken, UserController.updateUserData);
-// userRouter.delete('/api/users/:id', UserController.deleteUser);
+userRouter.post('/api/users', adminAuth, UserController.createUser);
+userRouter.post('/api/users/avatar', upload.single('upload'), auth, UserController.setAvatar);
+userRouter.patch('/api/users/:id', auth, UserController.updateUserData);
+userRouter.delete('/api/users/:id', auth, UserController.deleteUser);
 
 export default userRouter.routes();

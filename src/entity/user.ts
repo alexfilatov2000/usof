@@ -1,6 +1,8 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, Unique, OneToMany } from 'typeorm';
+import { Post } from './post';
 
 @Entity('users')
+@Unique(['login', 'email'])
 export class User {
     @PrimaryGeneratedColumn()
     id: number;
@@ -17,10 +19,10 @@ export class User {
     @Column()
     password: string;
 
-    @Column({ nullable: true })
+    @Column({ default: '' })
     profile_picture: string;
 
-    @Column({ nullable: true })
+    @Column({ default: 0 })
     rating: number;
 
     @Column({
@@ -29,4 +31,13 @@ export class User {
         default: 'user',
     })
     role: 'admin' | 'user';
+
+    @Column({ default: false })
+    isVerified: boolean;
+
+    @OneToMany('Post', (post: Post) => post.user, {
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+    })
+    posts: Array<Post>;
 }

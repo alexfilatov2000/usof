@@ -1,4 +1,8 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
+import { User } from './user';
+import { Comment } from './comment';
+import {Category} from "./category";
+import { Like } from "./like";
 
 @Entity('post')
 export class Post {
@@ -11,7 +15,7 @@ export class Post {
     @Column()
     title: string;
 
-    @Column()
+    @Column( { type: 'timestamp', default: () => 'CURRENT_TIMESTAMP'})
     publish_date: string;
 
     @Column({
@@ -24,6 +28,35 @@ export class Post {
     @Column()
     content: string;
 
-    @Column()
-    categories: string;
+    @Column({ nullable: true })
+    categories: string | null;
+
+    /*------------------------------------------------------*/
+
+    @Column("int", { nullable: true })
+    user_id: number;
+
+    @ManyToOne(() => User, (user: User) => user.posts)
+    @JoinColumn({ name: 'user_id' })
+    user: User;
+
+    /*------------------------------------------------------*/
+
+    @OneToMany('Comment', (comment: Comment) => comment.post, {
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+    })
+    comments: Array<Comment>;
+
+    @OneToMany('Category', (category: Category) => category.post, {
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+    })
+    categ: Array<Category>;
+
+    @OneToMany('Like', (like: Like) => like.post, {
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+    })
+    likes: Array<Category>;
 }
