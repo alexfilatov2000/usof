@@ -9,13 +9,13 @@ export class Comment {
     @Column()
     author: string;
 
-    @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP'})
+    @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
     publish_date: string;
 
     @Column()
     content: string;
 
-    @Column("int", { nullable: true })
+    @Column('int', { nullable: true })
     post_id: number;
 
     @ManyToOne(() => Post, (post: Post) => post.comments)

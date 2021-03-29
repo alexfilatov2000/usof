@@ -1,6 +1,6 @@
-import {Post} from "../../entity/post";
-import {sendErr} from "../interfaces/userInterface";
-import {createPostSchema, createCommentSchema, createLikeSchema} from "../joi/joiShemaPost";
+import { Post } from '../../entity/post';
+import { sendErr } from '../interfaces/userInterface';
+import { createPostSchema, createCommentSchema, createLikeSchema } from '../joi/joiShemaPost';
 
 export const createPostVal = (bodyData: Post): sendErr => {
     const newErr = { status: 200, body: {} };

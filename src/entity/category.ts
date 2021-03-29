@@ -1,5 +1,5 @@
-import {Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn} from 'typeorm';
-import {Post} from "./post";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { Post } from './post';
 
 @Entity('category')
 export class Category {
@@ -12,7 +12,7 @@ export class Category {
     @Column()
     description: string;
 
-    @Column("int", { nullable: true })
+    @Column('int', { nullable: true })
     post_id: number;
 
     @ManyToOne(() => Post, (post: Post) => post.categ)

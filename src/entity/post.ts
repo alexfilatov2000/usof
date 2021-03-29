@@ -1,8 +1,8 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
 import { User } from './user';
 import { Comment } from './comment';
-import {Category} from "./category";
-import { Like } from "./like";
+import { Category } from './category';
+import { Like } from './like';
 
 @Entity('post')
 export class Post {
@@ -15,7 +15,7 @@ export class Post {
     @Column()
     title: string;
 
-    @Column( { type: 'timestamp', default: () => 'CURRENT_TIMESTAMP'})
+    @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
     publish_date: string;
 
     @Column({
@@ -33,7 +33,7 @@ export class Post {
 
     /*------------------------------------------------------*/
 
-    @Column("int", { nullable: true })
+    @Column('int', { nullable: true })
     user_id: number;
 
     @ManyToOne(() => User, (user: User) => user.posts)

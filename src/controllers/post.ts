@@ -2,9 +2,9 @@ import { Context } from 'koa';
 import { getManager, Repository } from 'typeorm';
 import { Post } from '../entity/post';
 import { Comment } from '../entity/comment';
-import { Category } from "../entity/category";
-import { createPostVal, createCommentVal, createLikeVal } from "../lib/validation/postValidation";
-import { Like } from "../entity/like";
+import { Category } from '../entity/category';
+import { createPostVal, createCommentVal, createLikeVal } from '../lib/validation/postValidation';
+import { Like } from '../entity/like';
 
 /* ===|===|===|===|===|===|===|===|===|===|===|===|===|===|===|===| */
 
@@ -45,7 +45,7 @@ export default class PostController {
         const { id } = ctx.params;
         if (/\D/g.test(id)) return (ctx.status = 400);
 
-        const comments = await commentRepository.find({ where: { post_id: id }});
+        const comments = await commentRepository.find({ where: { post_id: id } });
         if (!comments.length) {
             //if no found comments (comments = [])
             return (ctx.status = 204);
@@ -62,7 +62,7 @@ export default class PostController {
         const { id } = ctx.params;
         if (/\D/g.test(id)) return (ctx.status = 400);
 
-        const categories = await categoryRepository.find({ where: { post_id: id }});
+        const categories = await categoryRepository.find({ where: { post_id: id } });
         if (!categories.length) {
             //if no found categories (categories = [])
             return (ctx.status = 204);
@@ -77,7 +77,7 @@ export default class PostController {
         const { id } = ctx.params;
         if (/\D/g.test(id)) return (ctx.status = 400);
 
-        const likes = await likeRepository.find({ where: { post_id: id }});
+        const likes = await likeRepository.find({ where: { post_id: id } });
         if (!likes.length) {
             //if no found likes (likes = [])
             return (ctx.status = 204);
@@ -94,7 +94,7 @@ export default class PostController {
         const { userByToken, title, content, categories } = ctx.request.body;
         const validation = createPostVal(ctx.request.body);
 
-        if (validation.status === 200){
+        if (validation.status === 200) {
             const postToBeSaved: Post = new Post();
             postToBeSaved.author = userByToken.login;
             postToBeSaved.title = title;
@@ -124,7 +124,7 @@ export default class PostController {
         if (/\D/g.test(id)) return (ctx.status = 400);
 
         const validation = createCommentVal(ctx.request.body);
-        if (validation.status === 200){
+        if (validation.status === 200) {
             const commentToBeSaved: Comment = new Comment();
             commentToBeSaved.author = userByToken.login;
             commentToBeSaved.content = content;
@@ -151,7 +151,7 @@ export default class PostController {
         if (/\D/g.test(id)) return (ctx.status = 400);
 
         const validation = createLikeVal(ctx.request.body);
-        if (validation.status === 200){
+        if (validation.status === 200) {
             const likeToBeSaved: Like = new Like();
             likeToBeSaved.author = userByToken.login;
             likeToBeSaved.type = type;

@@ -1,6 +1,6 @@
 import Router from 'koa-router';
 import PostController from '../controllers/post';
-import {auth} from "../middleware/userAuth";
+import { auth } from '../middleware/userAuth';
 const postRouter = new Router();
 
 //id = post_id

@@ -9,7 +9,7 @@ export class Like {
     @Column()
     author: string;
 
-    @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP'})
+    @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
     publish_date: string;
 
     @Column({
@@ -19,7 +19,7 @@ export class Like {
     })
     type: 'like' | 'dislike';
 
-    @Column("int", { nullable: true })
+    @Column('int', { nullable: true })
     post_id: number;
 
     @ManyToOne(() => Post, (post: Post) => post.likes)
