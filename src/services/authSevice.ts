@@ -6,14 +6,16 @@ import {
     saveNewUser,
     setHashPassword,
     verifyPassword,
-    updateUserPswById
-} from "../models/authModels";
+    updateUserPswById, updateUserStatusById,
+} from '../models/authModels';
 import jwt from "jsonwebtoken";
 import {config} from "../config";
 import {getVerifyURL, verifyTemplate} from "../lib/mail/verifyEmailMail";
 import {transporter} from "../lib/mail/transporter";
 import {User} from "../entity/user";
 import {getPasswordResetURL, resetPasswordTemplate} from "../lib/mail/resetMail";
+
+/* ===|===|===|===|===|===|===|===|===|===|===|===|===|===|===|===| */
 
 export const registerService = {
     saveUser: async (bodyData) => {
@@ -37,6 +39,8 @@ export const registerService = {
         await transporter.sendMail(emailTemplate);
     }
 }
+
+/* ===|===|===|===|===|===|===|===|===|===|===|===|===|===|===|===| */
 
 export const loginService = {
     checkUser: async (bodyData) => {
@@ -64,6 +68,8 @@ export const loginService = {
     }
 }
 
+/* ===|===|===|===|===|===|===|===|===|===|===|===|===|===|===|===| */
+
 export const pswResetService = {
     checkUser: async (bodyData) => {
         const { error } = remindPswByEmail.validate(bodyData);
@@ -88,6 +94,8 @@ export const pswResetService = {
     }
 }
 
+/* ===|===|===|===|===|===|===|===|===|===|===|===|===|===|===|===| */
+
 export const receiveNewPswService = {
     verifyToken: async (token) => {
         try {
@@ -104,6 +112,23 @@ export const receiveNewPswService = {
         const hash = await setHashPassword(bodyData.password);
 
         return await updateUserPswById(user.id, hash)
+    }
+}
+
+/* ===|===|===|===|===|===|===|===|===|===|===|===|===|===|===|===| */
+
+export const verifyEmailService = {
+    verifyToken: async (token) => {
+        try {
+            return jwt.verify(token, config.token.verifyEmailToken);
+        } catch (err) {
+            throw new Error('Wrong token');
+        }
+    },
+    updateUserStatus: async (bodyData, id) => {
+
+        const user = await updateUserStatusById(id)
+
     }
 }
 

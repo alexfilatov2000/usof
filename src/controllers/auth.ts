@@ -1,11 +1,9 @@
 import { Context } from 'koa';
-import argon2 from 'argon2';
 import jwt from 'jsonwebtoken';
 import { getManager, Repository, getConnection } from 'typeorm';
 import { User } from '../entity/user';
 import { config } from '../config';
-import { registerVal, loginVal, pswResetVal, recNewPswVal } from '../lib/validation/authValidation';
-import {loginService, pswResetService, registerService, receiveNewPswService} from "../services/authSevice";
+import {loginService, pswResetService, registerService, receiveNewPswService, verifyEmailService} from "../services/authSevice";
 
 /* ===|===|===|===|===|===|===|===|===|===|===|===|===|===|===|===| */
 
@@ -60,9 +58,8 @@ export default class UserController {
             //check token
             const token: any = await receiveNewPswService.verifyToken(ctx.params.token)
             //update user
-            const user = await receiveNewPswService.updateUser(ctx.request.body, token.id);
-            ctx.body = { user, msg: 'Your password has been saved' };
-            ctx.status = 200;
+            await receiveNewPswService.updateUser(ctx.request.body, token.id);
+            ctx.body = {msg: 'Your password has been saved'};
         } catch (err) {
             ctx.status = 400;
             ctx.body = {error: err.message}
@@ -72,19 +69,15 @@ export default class UserController {
     /* ===|===|===|===|===|===|===|===|===|===|===|===|===|===|===|===| */
 
     public static async verifyEmail(ctx: Context): Promise<void> {
-        const { token } = ctx.params;
-        try {
-            const data: any = await jwt.verify(token, config.token.verifyEmailToken);
-            await getConnection()
-                .createQueryBuilder()
-                .update(User)
-                .set({ isVerified: true })
-                .where('id = :id', { id: data.user.id })
-                .execute();
-            ctx.status = 200;
-            ctx.body = 'email successfully verified!';
-        } catch (e) {
-            ctx.throw(400, e);
+        try{
+            //check token
+            const token: any = await verifyEmailService.verifyToken(ctx.params.token)
+            //update user status to Verified(isVerified = true)
+            await verifyEmailService.updateUserStatus(ctx.request.body, token.user.id);
+            ctx.body = {msg: 'email successfully verified!'};
+        } catch (err) {
+            ctx.status = 400;
+            ctx.body = {error: err.message}
         }
     }
 }

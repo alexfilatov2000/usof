@@ -9,7 +9,12 @@ export const findUserById = async (id) => {
 
 export const updateUserPswById = async (id, password) => {
     const user: Repository<User> = getManager().getRepository(User);
-    return await user.update( id, { password });
+    await user.update( id, { password });
+}
+
+export const updateUserStatusById = async (id) => {
+    const user: Repository<User> = getManager().getRepository(User);
+    await user.update( id, { isVerified: true });
 }
 
 export const findUserByLogin = async (login) => {
