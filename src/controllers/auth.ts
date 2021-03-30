@@ -4,11 +4,8 @@ import jwt from 'jsonwebtoken';
 import { getManager, Repository, getConnection } from 'typeorm';
 import { User } from '../entity/user';
 import { config } from '../config';
-import { resetPasswordTemplate, getPasswordResetURL } from '../lib/mail/resetMail';
-import { getVerifyURL, verifyTemplate } from '../lib/mail/verifyEmailMail';
-import { transporter } from '../lib/mail/transporter';
 import { registerVal, loginVal, pswResetVal, recNewPswVal } from '../lib/validation/authValidation';
-import {loginService, pswResetService, registerService} from "../services/authSevice";
+import {loginService, pswResetService, registerService, receiveNewPswService} from "../services/authSevice";
 
 /* ===|===|===|===|===|===|===|===|===|===|===|===|===|===|===|===| */
 
@@ -59,28 +56,16 @@ export default class UserController {
     /* ===|===|===|===|===|===|===|===|===|===|===|===|===|===|===|===| */
 
     public static async receiveNewPassword(ctx: Context): Promise<void> {
-        // get a user repository to perform operations with user
-        const userRepository: Repository<User> = getManager().getRepository(User);
-        const { token } = ctx.params;
-        const { password } = ctx.request.body;
-        const validation = recNewPswVal(ctx.request.body, token);
-
-        if (validation.status === 200) {
-            const payload: any = jwt.verify(token, config.token.resetToken);
-            const user: User | undefined = await userRepository.findOne({ id: payload._id });
-
-            const hash = await argon2.hash(password);
-            await getConnection()
-                .createQueryBuilder()
-                .update(User)
-                .set({ password: hash })
-                .where('id = :id', { id: user.id })
-                .execute();
-
+        try{
+            //check token
+            const token: any = await receiveNewPswService.verifyToken(ctx.params.token)
+            //update user
+            const user = await receiveNewPswService.updateUser(ctx.request.body, token.id);
             ctx.body = { user, msg: 'Your password has been saved' };
-        } else {
-            ctx.status = validation.status;
-            ctx.body = validation.body;
+            ctx.status = 200;
+        } catch (err) {
+            ctx.status = 400;
+            ctx.body = {error: err.message}
         }
     }
 

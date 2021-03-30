@@ -2,6 +2,16 @@ import {getManager, Repository} from "typeorm";
 import {User} from "../entity/user";
 import argon2 from "argon2";
 
+export const findUserById = async (id) => {
+    const user: Repository<User> = getManager().getRepository(User);
+    return await user.findOne(id);
+}
+
+export const updateUserPswById = async (id, password) => {
+    const user: Repository<User> = getManager().getRepository(User);
+    return await user.update( id, { password });
+}
+
 export const findUserByLogin = async (login) => {
     const user: Repository<User> = getManager().getRepository(User);
     return await user.findOne({ login });

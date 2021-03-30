@@ -1,5 +1,13 @@
-import {loginSchema, registerSchema, remindPswByEmail} from "../lib/joi/joiShemaAuth";
-import {findUserByEmail, findUserByLogin, saveNewUser, setHashPassword, verifyPassword} from "../models/authModels";
+import {loginSchema, registerSchema, remindPswByEmail, resetSchema} from "../lib/joi/joiShemaAuth";
+import {
+    findUserByEmail,
+    findUserById,
+    findUserByLogin,
+    saveNewUser,
+    setHashPassword,
+    verifyPassword,
+    updateUserPswById
+} from "../models/authModels";
 import jwt from "jsonwebtoken";
 import {config} from "../config";
 import {getVerifyURL, verifyTemplate} from "../lib/mail/verifyEmailMail";
@@ -73,9 +81,29 @@ export const pswResetService = {
         }
     },
     sendMail: async (user) => {
-        const token = jwt.sign({ _id: user.id }, config.token.resetToken, { expiresIn: '1h' });
+        const token = jwt.sign({ id: user.id }, config.token.resetToken, { expiresIn: '1h' });
         const url = getPasswordResetURL(token);
         const emailTemplate = resetPasswordTemplate(user, url);
         await transporter.sendMail(emailTemplate);
     }
 }
+
+export const receiveNewPswService = {
+    verifyToken: async (token) => {
+        try {
+            return jwt.verify(token, config.token.resetToken);
+        } catch (err) {
+            throw new Error('Time is over');
+        }
+    },
+    updateUser: async (bodyData, id) => {
+        const { error } = resetSchema.validate(bodyData);
+        if (error) throw new Error(error.message);
+
+        const user = await findUserById(id);
+        const hash = await setHashPassword(bodyData.password);
+
+        return await updateUserPswById(user.id, hash)
+    }
+}
+
