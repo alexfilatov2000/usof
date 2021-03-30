@@ -3,7 +3,7 @@ import { getManager, Repository } from 'typeorm';
 import { Post } from '../entity/post';
 import { Comment } from '../entity/comment';
 import { Category } from '../entity/category';
-import { createPostVal, createCommentVal, createLikeVal } from '../lib/validation/postValidation';
+import { createPostVal, createCommentVal, createLikeVal, updatePostVal } from '../lib/validation/postValidation';
 import { Like } from '../entity/like';
 
 /* ===|===|===|===|===|===|===|===|===|===|===|===|===|===|===|===| */
@@ -26,7 +26,7 @@ export default class PostController {
     public static async getSpecifiedPosts(ctx: Context): Promise<void | number> {
         const postRepository: Repository<Post> = getManager().getRepository(Post);
         const { id } = ctx.params;
-        if (/\D/g.test(id)) return (ctx.status = 400);
+        if (/\D/g.test(id)) return (ctx.status = 500);
 
         const onePost = await postRepository.findOne(id);
         if (!onePost) {
@@ -43,7 +43,7 @@ export default class PostController {
     public static async getAllComments(ctx: Context): Promise<void | number> {
         const commentRepository: Repository<Comment> = getManager().getRepository(Comment);
         const { id } = ctx.params;
-        if (/\D/g.test(id)) return (ctx.status = 400);
+        if (/\D/g.test(id)) return (ctx.status = 500);
 
         const comments = await commentRepository.find({ where: { post_id: id } });
         if (!comments.length) {
@@ -60,7 +60,7 @@ export default class PostController {
     public static async getAllCategories(ctx: Context): Promise<void | number> {
         const categoryRepository: Repository<Category> = getManager().getRepository(Category);
         const { id } = ctx.params;
-        if (/\D/g.test(id)) return (ctx.status = 400);
+        if (/\D/g.test(id)) return (ctx.status = 500);
 
         const categories = await categoryRepository.find({ where: { post_id: id } });
         if (!categories.length) {
@@ -75,7 +75,7 @@ export default class PostController {
     public static async getAllLikes(ctx: Context): Promise<void | number> {
         const likeRepository: Repository<Like> = getManager().getRepository(Like);
         const { id } = ctx.params;
-        if (/\D/g.test(id)) return (ctx.status = 400);
+        if (/\D/g.test(id)) return (ctx.status = 500);
 
         const likes = await likeRepository.find({ where: { post_id: id } });
         if (!likes.length) {
@@ -121,7 +121,7 @@ export default class PostController {
         const commentRepository: Repository<Comment> = getManager().getRepository(Comment);
         const { userByToken, content } = ctx.request.body;
         const { id } = ctx.params;
-        if (/\D/g.test(id)) return (ctx.status = 400);
+        if (/\D/g.test(id)) return (ctx.status = 500);
 
         const validation = createCommentVal(ctx.request.body);
         if (validation.status === 200) {
@@ -148,14 +148,14 @@ export default class PostController {
         const likeRepository: Repository<Like> = getManager().getRepository(Like);
         const { userByToken, type } = ctx.request.body;
         const { id } = ctx.params;
-        if (/\D/g.test(id)) return (ctx.status = 400);
+        if (/\D/g.test(id)) return (ctx.status = 500);
 
         const validation = createLikeVal(ctx.request.body);
         if (validation.status === 200) {
             const likeToBeSaved: Like = new Like();
             likeToBeSaved.author = userByToken.login;
             likeToBeSaved.type = type;
-            likeToBeSaved.post_id = userByToken.id;
+            likeToBeSaved.post_id = id;
             try {
                 await likeRepository.save(likeToBeSaved);
                 ctx.status = 200;
@@ -166,5 +166,50 @@ export default class PostController {
             ctx.status = validation.status;
             ctx.body = validation.body;
         }
+    }
+
+    /* ===|===|===|===|===|===|===|===|===|===|===|===|===|===|===|===| */
+
+    public static async updatePost(ctx: Context): Promise<void | number> {
+        const postRepository: Repository<Post> = getManager().getRepository(Post);
+        let { title, content, categories } = ctx.request.body;
+        const { id } = ctx.params;
+        if (/\D/g.test(id)) return (ctx.status = 500);
+        const post = await postRepository.findOne(id)
+
+        const validation = updatePostVal(ctx.request.body, post);
+
+        if (validation.status === 200){
+            if (!title) title = post.title;
+            if (!content) content = post.content
+            if (!categories) categories = post.categories
+            await postRepository.update( id, { title, content, categories })
+
+            ctx.status = 200;
+        } else {
+            ctx.status = validation.status;
+            ctx.body = validation.body;
+        }
+    }
+
+    /* ===|===|===|===|===|===|===|===|===|===|===|===|===|===|===|===| */
+
+    public static async deletePost(ctx: Context): Promise<void | number> {
+        const postRepository: Repository<Post> = getManager().getRepository(Post);
+        const { userByToken } = ctx.request.body;
+        const { id } = ctx.params;
+
+        if (/\D/g.test(id)) return (ctx.status = 500);
+        const post = await postRepository.findOne(id);
+
+        if (!post) return (ctx.status = 400);
+        if (post.user_id !== userByToken.id) {
+            ctx.body = "You don't have access for that";
+            ctx.status = 400;
+            return;
+        }
+
+        await postRepository.delete(id);
+        ctx.status = 200;
     }
 }

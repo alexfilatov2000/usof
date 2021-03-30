@@ -16,3 +16,10 @@ export const createLikeSchema = Joi.object({
     type: Joi.string().valid('like', 'dislike'),
     userByToken: Joi.any(),
 });
+
+export const updatePostSchema = Joi.object({
+    title: Joi.string().min(4),
+    content: Joi.string().min(10),
+    categories: Joi.string(),
+    userByToken: Joi.any(),
+});

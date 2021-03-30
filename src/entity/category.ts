@@ -15,7 +15,10 @@ export class Category {
     @Column('int', { nullable: true })
     post_id: number;
 
-    @ManyToOne(() => Post, (post: Post) => post.categ)
+    @ManyToOne(() => Post, (post: Post) => post.categ, {
+        onDelete: "CASCADE",
+        onUpdate: 'CASCADE'
+    })
     @JoinColumn({ name: 'post_id' })
     post: Post;
 }

@@ -8,84 +8,51 @@ import { resetPasswordTemplate, getPasswordResetURL } from '../lib/mail/resetMai
 import { getVerifyURL, verifyTemplate } from '../lib/mail/verifyEmailMail';
 import { transporter } from '../lib/mail/transporter';
 import { registerVal, loginVal, pswResetVal, recNewPswVal } from '../lib/validation/authValidation';
+import {loginService, pswResetService, registerService} from "../services/authSevice";
 
 /* ===|===|===|===|===|===|===|===|===|===|===|===|===|===|===|===| */
 
 export default class UserController {
     public static async register(ctx: Context): Promise<void> {
-        // get a user repository to perform operations with user
-        const userRepository: Repository<User> = getManager().getRepository(User);
-        const { full_name, email, login, password } = ctx.request.body;
-
-        const findByEmailObj = await userRepository.findOne({ email });
-        const findByLoginObj = await userRepository.findOne({ login });
-        const validation = registerVal(ctx.request.body, findByEmailObj, findByLoginObj);
-
-        if (validation.status === 200) {
-            const hash = await argon2.hash(password);
-            // build up entity user to be saved
-            const userToBeSaved: User = new User();
-            userToBeSaved.full_name = full_name;
-            userToBeSaved.login = login;
-            userToBeSaved.email = email;
-            userToBeSaved.password = hash;
-            // Create a new user
-            const user = await userRepository.save(userToBeSaved);
-            //Send verification link to user
-            const token = jwt.sign({ user }, config.token.verifyEmailToken);
-            const url = getVerifyURL(token);
-            const emailTemplate = verifyTemplate(user, url);
-            await transporter.sendMail(emailTemplate);
-
+        try {
+            //save user
+            let user = await registerService.saveUser(ctx.request.body);
+            //send email verification
+            await registerService.sendMail(user);
             ctx.status = 201;
-            ctx.body = { user, token };
-        } else {
-            ctx.status = validation.status;
-            ctx.body = validation.body;
+            ctx.body = user;
+        } catch (err){
+            ctx.status = 400;
+            ctx.body = {error: err.message}
         }
     }
 
     /* ===|===|===|===|===|===|===|===|===|===|===|===|===|===|===|===| */
 
     public static async login(ctx: Context): Promise<void> {
-        // get a user repository to perform operations with user
-        const userRepository: Repository<User> = getManager().getRepository(User);
-        const { login } = ctx.request.body;
-        const user: User | undefined = await userRepository.findOne({ login });
-
-        const validation = await loginVal(ctx.request.body, user);
-
-        if (validation.status === 200) {
-            const accessToken = generateAccessToken({ user });
-
-            ctx.status = 200;
-            ctx.body = { user, accessToken };
-        } else {
-            ctx.status = validation.status;
-            ctx.body = validation.body;
+        try{
+            //check user
+            const user = await loginService.checkUser(ctx.request.body);
+            const token = loginService.generateAccessToken({user});
+            ctx.body = {user, token}
+        } catch (err) {
+            ctx.status = 400;
+            ctx.body = {error: err.message}
         }
     }
 
     /* ===|===|===|===|===|===|===|===|===|===|===|===|===|===|===|===| */
 
     public static async passwordReset(ctx: Context): Promise<void> {
-        // get a user repository to perform operations with user
-        const userRepository: Repository<User> = getManager().getRepository(User);
-        const { email } = ctx.request.body;
-        const user: User | undefined = await userRepository.findOne({ email });
-
-        const validation = pswResetVal(ctx.request.body, user);
-
-        if (validation.status === 200) {
-            const token = jwt.sign({ _id: user.id }, config.token.resetToken, { expiresIn: '1h' });
-            const url = getPasswordResetURL(token);
-            const emailTemplate = resetPasswordTemplate(user, url);
-
-            await transporter.sendMail(emailTemplate);
+        try{
+            //check user
+            const user = await pswResetService.checkUser(ctx.request.body);
+            //send mail
+            await pswResetService.sendMail(user);
             ctx.status = 200;
-        } else {
-            ctx.status = validation.status;
-            ctx.body = validation.body;
+        } catch (err) {
+            ctx.status = 400;
+            ctx.body = {error: err.message}
         }
     }
 
@@ -138,9 +105,3 @@ export default class UserController {
 }
 
 /* ===|===|===|===|===|===|===|===|===|===|===|===|===|===|===|===| */
-
-const generateAccessToken = (user: { user: User }): string => {
-    return jwt.sign(user, config.token.accessToken, {
-        expiresIn: '1h',
-    });
-};

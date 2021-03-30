@@ -22,7 +22,10 @@ export class Like {
     @Column('int', { nullable: true })
     post_id: number;
 
-    @ManyToOne(() => Post, (post: Post) => post.likes)
+    @ManyToOne(() => Post, (post: Post) => post.likes, {
+        onDelete: "CASCADE",
+        onUpdate: 'CASCADE'
+    })
     @JoinColumn({ name: 'post_id' })
     post: Post;
 }
