@@ -11,7 +11,7 @@ export const adminAuth = async (ctx: Context, next: () => Promise<void>): Promis
     try {
         const data: any = await jwt.verify(token, config.token.accessToken);
         if (data.user.role === 'admin') {
-            ctx.request.body.token = data;
+            ctx.request.body.userByToken = data;
             await next();
         } else {
             return (ctx.status = 401);

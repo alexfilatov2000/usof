@@ -16,8 +16,8 @@ export class Category {
     post_id: number;
 
     @ManyToOne(() => Post, (post: Post) => post.categ, {
-        onDelete: "CASCADE",
-        onUpdate: 'CASCADE'
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
     })
     @JoinColumn({ name: 'post_id' })
     post: Post;

@@ -37,8 +37,8 @@ export class Post {
     user_id: number;
 
     @ManyToOne(() => User, (user: User) => user.posts, {
-        onDelete: "CASCADE",
-        onUpdate: 'CASCADE'
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
     })
     @JoinColumn({ name: 'user_id' })
     user: User;

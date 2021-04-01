@@ -1,83 +1,51 @@
 import { Context } from 'koa';
-import argon2 from 'argon2';
-import { getManager, Repository, getConnection } from 'typeorm';
-import { User } from '../entity/user';
-import { createUserVal, updateUserVal } from '../lib/validation/userValidation';
-
-/* ===|===|===|===|===|===|===|===|===|===|===|===|===|===|===|===| */
+import {
+    getAllUsersService,
+    getOneUserService,
+    createUserService,
+    updateUserService,
+    deleteUser,
+} from '../services/userService';
 
 export default class UserController {
+    /* ===|===|===|===|===| get '/api/users/' |===|===|===|===|===|===|===| */
+
     public static async getAllUsers(ctx: Context): Promise<void> {
-        // get a user repository to perform operations with user
-        const userRepository: Repository<User> = getManager().getRepository(User);
-        const allUsers = await userRepository.find();
-        if (!allUsers) {
+        try {
+            //get all users
+            ctx.body = await getAllUsersService();
+        } catch (err) {
             ctx.status = 400;
-            ctx.body = { error: 'No user found' };
-            return;
-        } else {
-            ctx.status = 200;
-            ctx.body = allUsers;
+            ctx.body = { error: err.message };
         }
     }
 
-    /* ===|===|===|===|===|===|===|===|===|===|===|===|===|===|===|===| */
+    /* ===|===|===|===|===| get '/api/users/:id' |===|===|===|===|===|===|===| */
 
     public static async getUserById(ctx: Context): Promise<void> {
-        // get a user repository to perform operations with user
-        const userRepository: Repository<User> = getManager().getRepository(User);
-        const { id } = ctx.params;
-        const user = await userRepository.findOne(id);
-        if (!user) {
+        try {
+            //get specified user by id
+            ctx.body = await getOneUserService(ctx.params.id);
+        } catch (err) {
             ctx.status = 400;
-            ctx.body = { error: 'No user found' };
-            return;
-        } else {
-            ctx.status = 200;
-            ctx.body = user;
+            ctx.body = { error: err.message };
         }
     }
 
-    /* ===|===|===|===|===|===|===|===|===|===|===|===|===|===|===|===| */
+    /* ===|===|===|===|===| post '/api/users' |===|===|===|===|===|===|===| */
 
     public static async createUser(ctx: Context): Promise<void> {
-        // get a user repository to perform operations with user
-        const userRepository: Repository<User> = getManager().getRepository(User);
-        const { full_name, email, login, password, role } = ctx.request.body;
-
-        const findByEmailObj = await userRepository.findOne({ email });
-        const findByLoginObj = await userRepository.findOne({ login });
-
-        const validation = createUserVal(ctx.request.body, findByEmailObj, findByLoginObj);
-
-        if (validation.status === 200) {
-            // Hash password
-            const hash = await argon2.hash(password);
-            // build up entity user to be saved
-            const userToBeSaved: User = new User();
-            userToBeSaved.full_name = full_name;
-            userToBeSaved.login = login;
-            userToBeSaved.email = email;
-            userToBeSaved.role = role;
-            userToBeSaved.password = hash;
-            // Create a new user
-            try {
-                const user = await userRepository.save(userToBeSaved);
-                ctx.status = 201;
-                ctx.body = user;
-            } catch (e) {
-                //check for: invalid input value for enum users_role_enum
-                ctx.status = 400;
-                ctx.body = { error: e.message };
-            }
-        } else {
-            ctx.status = validation.status;
-            ctx.body = validation.body;
+        try {
+            //create new user (only admin has access!)
+            ctx.body = await createUserService(ctx.request.body);
+        } catch (err) {
+            ctx.status = 400;
+            ctx.body = { error: err.message };
         }
     }
 
     /* ===|===|===|===|===|===|===|===|===|===|===|===|===|===|===|===| */
-
+    //todo: save img path to db
     public static async setAvatar(ctx: Context): Promise<void> {
         try {
             ctx.status = 200;
@@ -87,50 +55,28 @@ export default class UserController {
         }
     }
 
-    /* ===|===|===|===|===|===|===|===|===|===|===|===|===|===|===|===| */
-
+    /* ===|===|===|===|===| patch '/api/users/:id' |===|===|===|===|===|===|===| */
+    //todo: come up with better logic
     public static async updateUserData(ctx: Context): Promise<void> {
-        const userRepository: Repository<User> = getManager().getRepository(User);
-        const { id } = ctx.params;
-        if (!(await userRepository.findOne(id))) {
+        try {
+            //update user (only admin has access?)
+            ctx.body = await updateUserService(ctx.request.body, ctx.params);
+        } catch (err) {
             ctx.status = 400;
-            return;
-        }
-        const { full_name, email, login, password } = ctx.request.body;
-
-        const findByEmailObj = await userRepository.findOne({ email });
-        const findByLoginObj = await userRepository.findOne({ login });
-
-        const validation = updateUserVal(ctx.request.body, findByEmailObj, findByLoginObj);
-
-        if (validation.status === 200) {
-            const hash = await argon2.hash(password);
-
-            await getConnection()
-                .createQueryBuilder()
-                .update(User)
-                .set({ full_name, email, login, password: hash })
-                .where('id = :id', { id: id })
-                .execute();
-
-            ctx.status = 200;
-            ctx.body = await userRepository.findOne(id);
-        } else {
-            ctx.status = validation.status;
-            ctx.body = validation.body;
+            ctx.body = { error: err.message };
         }
     }
 
-    /* ===|===|===|===|===|===|===|===|===|===|===|===|===|===|===|===| */
+    /* ===|===|===|===|===| delete '/api/users/:id' |===|===|===|===|===|===|===| */
 
     public static async deleteUser(ctx: Context): Promise<void> {
-        const userRepository: Repository<User> = getManager().getRepository(User);
-        const { id } = ctx.params;
-        if (!(await userRepository.findOne(id))) {
+        try {
+            //delete user by id
+            await deleteUser(ctx.params);
+            ctx.status = 200;
+        } catch (err) {
             ctx.status = 400;
-            return;
+            ctx.body = { error: err.message };
         }
-        await userRepository.delete(id);
-        ctx.status = 200;
     }
 }

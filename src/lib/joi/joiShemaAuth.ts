@@ -26,10 +26,10 @@ export const createUserSchema = Joi.object({
     full_name: Joi.string().min(6).required(),
     login: Joi.string().min(4).required(),
     email: Joi.string().min(6).required().email(),
-    role: Joi.string().min(4).required(),
+    role: Joi.string().valid('user', 'admin').required(),
     password: Joi.string().min(6).required(),
     password2: Joi.ref('password'),
-    token: Joi.any(),
+    userByToken: Joi.any(),
 });
 
 export const updateUserSchema = Joi.object({
@@ -37,6 +37,5 @@ export const updateUserSchema = Joi.object({
     login: Joi.string().min(4).required(),
     email: Joi.string().min(6).required().email(),
     password: Joi.string().min(6).required(),
-    password2: Joi.ref('password'),
-    token: Joi.any(),
+    userByToken: Joi.any(),
 });

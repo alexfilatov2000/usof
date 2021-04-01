@@ -1,4 +1,4 @@
-import {loginSchema, registerSchema, remindPswByEmail, resetSchema} from "../lib/joi/joiShemaAuth";
+import { loginSchema, registerSchema, remindPswByEmail, resetSchema } from '../lib/joi/joiShemaAuth';
 import {
     findUserByEmail,
     findUserById,
@@ -6,19 +6,20 @@ import {
     saveNewUser,
     setHashPassword,
     verifyPassword,
-    updateUserPswById, updateUserStatusById,
+    updateUserPswById,
+    updateUserStatusById,
 } from '../models/authModels';
-import jwt from "jsonwebtoken";
-import {config} from "../config";
-import {getVerifyURL, verifyTemplate} from "../lib/mail/verifyEmailMail";
-import {transporter} from "../lib/mail/transporter";
-import {User} from "../entity/user";
-import {getPasswordResetURL, resetPasswordTemplate} from "../lib/mail/resetMail";
+import jwt from 'jsonwebtoken';
+import { config } from '../config';
+import { getVerifyURL, verifyTemplate } from '../lib/mail/verifyEmailMail';
+import { transporter } from '../lib/mail/transporter';
+import { User } from '../entity/user';
+import { getPasswordResetURL, resetPasswordTemplate } from '../lib/mail/resetMail';
 
 /* ===|===|===|===|===|===|===|===|===|===|===|===|===|===|===|===| */
 
 export const registerService = {
-    saveUser: async (bodyData) => {
+    saveUser: async (bodyData: User): Promise<User> => {
         const { error } = registerSchema.validate(bodyData);
 
         if (error) {
@@ -32,18 +33,18 @@ export const registerService = {
             return await saveNewUser(bodyData.full_name, bodyData.login, bodyData.email, hash);
         }
     },
-    sendMail: async (user) => {
+    sendMail: async (user: User): Promise<void> => {
         const token = jwt.sign({ user }, config.token.verifyEmailToken);
         const url = getVerifyURL(token);
         const emailTemplate = verifyTemplate(user, url);
         await transporter.sendMail(emailTemplate);
-    }
-}
+    },
+};
 
 /* ===|===|===|===|===|===|===|===|===|===|===|===|===|===|===|===| */
 
 export const loginService = {
-    checkUser: async (bodyData) => {
+    checkUser: async (bodyData: User): Promise<User> => {
         const { error } = loginSchema.validate(bodyData);
 
         if (error) {
@@ -52,11 +53,11 @@ export const loginService = {
         if (!(await findUserByLogin(bodyData.login))) {
             throw new Error('Login is not found');
         }
-        const user = await findUserByLogin(bodyData.login)
-        if (!(await verifyPassword(user.password, bodyData.password))){
+        const user = await findUserByLogin(bodyData.login);
+        if (!(await verifyPassword(user.password, bodyData.password))) {
             throw new Error('Invalid password');
         }
-        if (!user.isVerified){
+        if (!user.isVerified) {
             throw new Error('You should verify your email first');
         }
         return user;
@@ -65,19 +66,19 @@ export const loginService = {
         return jwt.sign(user, config.token.accessToken, {
             expiresIn: '1h',
         });
-    }
-}
+    },
+};
 
 /* ===|===|===|===|===|===|===|===|===|===|===|===|===|===|===|===| */
 
 export const pswResetService = {
-    checkUser: async (bodyData) => {
+    checkUser: async (bodyData: User): Promise<User> => {
         const { error } = remindPswByEmail.validate(bodyData);
 
         if (error) {
             throw new Error(error.message);
         }
-        const user = await findUserByEmail(bodyData.email)
+        const user = await findUserByEmail(bodyData.email);
         if (!user) {
             throw new Error('No user with that email');
         } else if (!user.isVerified) {
@@ -86,49 +87,46 @@ export const pswResetService = {
             return user;
         }
     },
-    sendMail: async (user) => {
+    sendMail: async (user: User): Promise<void> => {
         const token = jwt.sign({ id: user.id }, config.token.resetToken, { expiresIn: '1h' });
         const url = getPasswordResetURL(token);
         const emailTemplate = resetPasswordTemplate(user, url);
         await transporter.sendMail(emailTemplate);
-    }
-}
+    },
+};
 
 /* ===|===|===|===|===|===|===|===|===|===|===|===|===|===|===|===| */
 
 export const receiveNewPswService = {
-    verifyToken: async (token) => {
+    verifyToken: async (token: string): Promise<any> => {
         try {
             return jwt.verify(token, config.token.resetToken);
         } catch (err) {
             throw new Error('Time is over');
         }
     },
-    updateUser: async (bodyData, id) => {
+    updateUser: async (bodyData: User, id: number): Promise<void> => {
         const { error } = resetSchema.validate(bodyData);
         if (error) throw new Error(error.message);
 
         const user = await findUserById(id);
         const hash = await setHashPassword(bodyData.password);
 
-        return await updateUserPswById(user.id, hash)
-    }
-}
+        await updateUserPswById(user.id, hash);
+    },
+};
 
 /* ===|===|===|===|===|===|===|===|===|===|===|===|===|===|===|===| */
 
 export const verifyEmailService = {
-    verifyToken: async (token) => {
+    verifyToken: async (token: string): Promise<any> => {
         try {
             return jwt.verify(token, config.token.verifyEmailToken);
         } catch (err) {
             throw new Error('Wrong token');
         }
     },
-    updateUserStatus: async (bodyData, id) => {
-
-        const user = await updateUserStatusById(id)
-
-    }
-}
-
+    updateUserStatus: async (bodyData: User, id: number): Promise<void> => {
+        await updateUserStatusById(id);
+    },
+};

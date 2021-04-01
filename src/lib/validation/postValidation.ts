@@ -47,9 +47,9 @@ export const updatePostVal = (bodyData: any, post: Post): sendErr => {
 
     if (!post) {
         newErr.status = 400;
-        newErr.body = { error: 'No post found'};
+        newErr.body = { error: 'No post found' };
         return newErr;
-    } else if(post.user_id !== bodyData.userByToken.id){
+    } else if (post.user_id !== bodyData.userByToken.id) {
         newErr.status = 400;
         newErr.body = "You don't have access for that";
         return newErr;

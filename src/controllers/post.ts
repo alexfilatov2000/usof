@@ -175,15 +175,15 @@ export default class PostController {
         let { title, content, categories } = ctx.request.body;
         const { id } = ctx.params;
         if (/\D/g.test(id)) return (ctx.status = 500);
-        const post = await postRepository.findOne(id)
+        const post = await postRepository.findOne(id);
 
         const validation = updatePostVal(ctx.request.body, post);
 
-        if (validation.status === 200){
+        if (validation.status === 200) {
             if (!title) title = post.title;
-            if (!content) content = post.content
-            if (!categories) categories = post.categories
-            await postRepository.update( id, { title, content, categories })
+            if (!content) content = post.content;
+            if (!categories) categories = post.categories;
+            await postRepository.update(id, { title, content, categories });
 
             ctx.status = 200;
         } else {
