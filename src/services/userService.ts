@@ -3,7 +3,7 @@ import { createUserSchema, updateUserSchema } from '../lib/joi/joiShemaAuth';
 import { findUserByEmail, findUserByLogin, setHashPassword } from '../models/authModels';
 import { User } from '../entity/user';
 
-export const getAllUsersService = async () => {
+export const getAllUsersService = async (): Promise<User[]> => {
     const allUsers = await findAllUsers();
     if (!allUsers) {
         throw new Error('No user found');
@@ -12,7 +12,7 @@ export const getAllUsersService = async () => {
     }
 };
 
-export const getOneUserService = async (id) => {
+export const getOneUserService = async (id: number): Promise<User> => {
     const user = await findOneUserById(id);
     if (!user) {
         throw new Error('No user found');
@@ -21,7 +21,7 @@ export const getOneUserService = async (id) => {
     }
 };
 
-export const createUserService = async (bodyData: User) => {
+export const createUserService = async (bodyData: User): Promise<User> => {
     const { error } = createUserSchema.validate(bodyData);
 
     if (error) throw new Error(error.message);
@@ -32,7 +32,7 @@ export const createUserService = async (bodyData: User) => {
     return createUser(bodyData);
 };
 
-export const updateUserService = async (bodyData: User, id: number) => {
+export const updateUserService = async (bodyData: User, id: number): Promise<User> => {
     const { error } = updateUserSchema.validate(bodyData);
     if (error) throw new Error(error.message);
 
@@ -45,7 +45,7 @@ export const updateUserService = async (bodyData: User, id: number) => {
     return bodyData;
 };
 
-export const deleteUserService = async (id) => {
+export const deleteUserService = async (id: number): Promise<void> => {
     const user = await findOneUserById(id);
     if (!user) {
         throw new Error('No user found with this id');

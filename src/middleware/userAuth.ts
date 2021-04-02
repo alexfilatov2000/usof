@@ -11,7 +11,7 @@ export const auth = async (ctx: Context, next: () => Promise<void>): Promise<voi
     try {
         const data: any = await jwt.verify(token, config.token.accessToken);
         if (data.user.isVerified === true) {
-            ctx.request.body.userByToken = data.user;
+            ctx.userByToken = data.user;
             await next();
         } else {
             ctx.body = 'You should verify your email firstly';

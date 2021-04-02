@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken';
 import { config } from '../config';
 import { Context } from 'koa';
 
-export const adminAuth = async (ctx: Context, next: () => Promise<void>): Promise<any> => {
+export const adminAuth = async (ctx: Context, next: () => Promise<void>): Promise<void | number> => {
     const authHeader = ctx.get('authorization');
     const token = authHeader && authHeader.split(' ')[1];
 
@@ -11,7 +11,7 @@ export const adminAuth = async (ctx: Context, next: () => Promise<void>): Promis
     try {
         const data: any = await jwt.verify(token, config.token.accessToken);
         if (data.user.role === 'admin') {
-            ctx.request.body.userByToken = data;
+            ctx.userByToken = data.user;
             await next();
         } else {
             return (ctx.status = 401);

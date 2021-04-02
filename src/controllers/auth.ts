@@ -58,7 +58,7 @@ export default class UserController {
     public static async receiveNewPassword(ctx: Context): Promise<void> {
         try {
             //check token
-            const token: any = await receiveNewPswService.verifyToken(ctx.params.token);
+            const token = await receiveNewPswService.verifyToken(ctx.params.token);
             //update user
             await receiveNewPswService.updateUser(ctx.request.body, token.id);
             ctx.body = { msg: 'Your password has been saved' };
@@ -73,7 +73,7 @@ export default class UserController {
     public static async verifyEmail(ctx: Context): Promise<void> {
         try {
             //check token
-            const token: any = await verifyEmailService.verifyToken(ctx.params.token);
+            const token = await verifyEmailService.verifyToken(ctx.params.token);
             //update user status to Verified(isVerified = true)
             await verifyEmailService.updateUserStatus(ctx.request.body, token.user.id);
             ctx.body = { msg: 'email successfully verified!' };

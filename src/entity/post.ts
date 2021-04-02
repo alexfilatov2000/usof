@@ -45,17 +45,23 @@ export class Post {
 
     /*------------------------------------------------------*/
 
+    @Column('int', { nullable: true })
+    category_id: number;
+
+    @ManyToOne(() => Category, (category: Category) => category.posts, {
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+    })
+    @JoinColumn({ name: 'category_id' })
+    category: Category;
+
+    /*------------------------------------------------------*/
+
     @OneToMany('Comment', (comment: Comment) => comment.post, {
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
     })
     comments: Array<Comment>;
-
-    @OneToMany('Category', (category: Category) => category.post, {
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE',
-    })
-    categ: Array<Category>;
 
     @OneToMany('Like', (like: Like) => like.post, {
         onDelete: 'CASCADE',

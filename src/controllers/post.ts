@@ -79,7 +79,7 @@ export default class PostController {
     public static async createPost(ctx: Context): Promise<void> {
         try {
             //create new post
-            await createPostService(ctx.request.body);
+            await createPostService(ctx.request.body, ctx.userByToken);
             ctx.status = 201;
         } catch (err) {
             ctx.body = { error: err.message };
@@ -92,7 +92,7 @@ export default class PostController {
     public static async createComment(ctx: Context): Promise<void> {
         try {
             //create new comment
-            await createCommentService(ctx.request.body, ctx.params.id);
+            await createCommentService(ctx.request.body, ctx.params.id, ctx.userByToken);
             ctx.status = 201;
         } catch (err) {
             ctx.body = { error: err.message };
@@ -105,7 +105,7 @@ export default class PostController {
     public static async createLike(ctx: Context): Promise<void> {
         try {
             //create new like
-            await createLikeService(ctx.request.body, ctx.params.id);
+            await createLikeService(ctx.request.body, ctx.params.id, ctx.userByToken);
             ctx.status = 201;
         } catch (err) {
             ctx.body = { error: err.message };
@@ -118,7 +118,7 @@ export default class PostController {
     public static async updatePost(ctx: Context): Promise<void> {
         try {
             //update post (title?, content?, categories?) if exist
-            await updatePostService(ctx.request.body, ctx.params.id);
+            await updatePostService(ctx.request.body, ctx.params.id, ctx.userByToken);
             ctx.status = 200;
         } catch (err) {
             ctx.body = { error: err.message };
@@ -129,11 +129,9 @@ export default class PostController {
     /* ===|===|===|===|===| delete '/api/posts/:id' |===|===|===|===|===|===|===| */
 
     public static async deletePost(ctx: Context): Promise<void> {
-        const { userByToken } = ctx.request.body;
-        const { id } = ctx.params;
         try {
             //delete post
-            await deletePostService(userByToken, id);
+            await deletePostService(ctx.userByToken, ctx.params.id);
             ctx.status = 200;
         } catch (err) {
             ctx.body = { error: err.message };
@@ -144,11 +142,9 @@ export default class PostController {
     /* ===|===|===|===|===| delete '/api/posts/:id/like' |===|===|===|===|===|===|===| */
 
     public static async deleteLike(ctx: Context): Promise<void> {
-        const { userByToken } = ctx.request.body;
-        const { id } = ctx.params;
         try {
             //delete like
-            await deleteLikeService(userByToken, id);
+            await deleteLikeService(ctx.userByToken, ctx.params.id);
             ctx.status = 200;
         } catch (err) {
             ctx.body = { error: err.message };

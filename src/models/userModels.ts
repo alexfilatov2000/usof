@@ -16,7 +16,7 @@ export const deleteUserById = async (id: number): Promise<void> => {
     await user.delete(id);
 };
 
-export const createUser = async (data): Promise<User> => {
+export const createUser = async (data: User): Promise<User> => {
     const user: Repository<User> = getManager().getRepository(User);
 
     const userToBeSaved: User = new User();
@@ -29,7 +29,7 @@ export const createUser = async (data): Promise<User> => {
     return await user.save(userToBeSaved);
 };
 
-export const updateUser = async (id, data: User): Promise<void> => {
+export const updateUser = async (id: number, data: User): Promise<void> => {
     const user: Repository<User> = getManager().getRepository(User);
 
     await user.update(id, {

@@ -17,6 +17,7 @@ import { Comment } from '../entity/comment';
 import { Category } from '../entity/category';
 import { Like } from '../entity/like';
 import { createCommentSchema, createLikeSchema, createPostSchema, updatePostSchema } from '../lib/joi/joiShemaPost';
+import { User } from '../entity/user';
 
 export const getAllPostsService = async (): Promise<Post[]> => {
     const posts = await findAllPosts();
@@ -51,33 +52,33 @@ export const getLikesService = async (id: number): Promise<Like[]> => {
     return likes;
 };
 
-export const createPostService = async (bodyData: any): Promise<void> => {
+export const createPostService = async (bodyData: Post, user: User): Promise<void> => {
     const { error } = createPostSchema.validate(bodyData);
     if (error) throw new CustomError(error.message, 400);
 
-    await createPostModel(bodyData);
+    await createPostModel(bodyData, user);
 };
 
-export const createCommentService = async (bodyData: any, post_id: number): Promise<void> => {
+export const createCommentService = async (bodyData: Comment, post_id: number, user: User): Promise<void> => {
     const { error } = createCommentSchema.validate(bodyData);
     if (error) throw new CustomError(error.message, 400);
 
-    await createCommentModel(bodyData, post_id);
+    await createCommentModel(bodyData, post_id, user);
 };
 
-export const createLikeService = async (bodyData: any, post_id: number): Promise<void> => {
+export const createLikeService = async (bodyData: Like, post_id: number, user: User): Promise<void> => {
     const { error } = createLikeSchema.validate(bodyData);
     if (error) throw new CustomError(error.message, 400);
 
-    await createLikeModel(bodyData, post_id);
+    await createLikeModel(bodyData, post_id, user);
 };
 
-export const updatePostService = async (bodyData: any, post_id: number): Promise<void> => {
+export const updatePostService = async (bodyData: Post, post_id: number, user: User): Promise<void> => {
     const { error } = updatePostSchema.validate(bodyData);
     const post = await findOnePost(post_id);
 
     if (!post) throw new CustomError('No post found', 204);
-    if (post.user_id !== bodyData.userByToken.id) throw new CustomError('Access denied', 400);
+    if (post.user_id !== user.id) throw new CustomError('Access denied', 400);
     if (error) throw new CustomError(error.message, 400);
 
     if (!bodyData.title) bodyData.title = post.title;
@@ -87,17 +88,17 @@ export const updatePostService = async (bodyData: any, post_id: number): Promise
     await updatePostModel(bodyData, post_id);
 };
 
-export const deletePostService = async (userByToken, id): Promise<void> => {
+export const deletePostService = async (user: User, id: number): Promise<void> => {
     const post = await findOnePost(id);
     if (!post) throw new CustomError('No post found', 204);
-    if (post.user_id !== userByToken.id) throw new CustomError('access denied', 400);
+    if (post.user_id !== user.id) throw new CustomError('access denied', 400);
 
     await deletePostModel(id);
 };
 
-export const deleteLikeService = async (userByToken, post_id): Promise<void> => {
+export const deleteLikeService = async (user: User, post_id: number): Promise<void> => {
     const post = await findOnePost(post_id);
     if (!post) throw new CustomError('No post found', 204);
 
-    await deleteLikeModel(post_id, userByToken.id);
+    await deleteLikeModel(post_id, user.id);
 };
