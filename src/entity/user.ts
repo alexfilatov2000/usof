@@ -1,9 +1,8 @@
-import { Entity, PrimaryGeneratedColumn, Column, Unique, OneToMany } from 'typeorm';
+import {Entity, PrimaryGeneratedColumn, Column, OneToMany, Index} from 'typeorm';
 import { Post } from './post';
 import { Like } from './like';
 
 @Entity('users')
-@Unique(['login', 'email'])
 export class User {
     @PrimaryGeneratedColumn()
     id: number;
@@ -12,9 +11,11 @@ export class User {
     full_name: string;
 
     @Column()
+    @Index({ unique: true })
     login: string;
 
     @Column()
+    @Index({ unique: true })
     email: string;
 
     @Column()
