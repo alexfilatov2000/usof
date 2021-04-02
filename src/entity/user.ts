@@ -1,5 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, Unique, OneToMany } from 'typeorm';
 import { Post } from './post';
+import { Like } from './like';
 
 @Entity('users')
 @Unique(['login', 'email'])
@@ -40,4 +41,10 @@ export class User {
         onUpdate: 'CASCADE',
     })
     posts: Array<Post>;
+
+    @OneToMany('Like', (like: Like) => like.user, {
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+    })
+    likes: Array<Like>;
 }

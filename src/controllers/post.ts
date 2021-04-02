@@ -1,215 +1,158 @@
 import { Context } from 'koa';
-import { getManager, Repository } from 'typeorm';
-import { Post } from '../entity/post';
-import { Comment } from '../entity/comment';
-import { Category } from '../entity/category';
-import { createPostVal, createCommentVal, createLikeVal, updatePostVal } from '../lib/validation/postValidation';
-import { Like } from '../entity/like';
-
-/* ===|===|===|===|===|===|===|===|===|===|===|===|===|===|===|===| */
+import {
+    getAllPostsService,
+    getOnePostService,
+    getCommentsService,
+    getCategoriesService,
+    getLikesService,
+    createPostService,
+    createCommentService,
+    createLikeService,
+    updatePostService,
+    deletePostService,
+    deleteLikeService,
+} from '../services/postService';
 
 export default class PostController {
-    public static async getAllPosts(ctx: Context): Promise<void | number> {
-        const postRepository: Repository<Post> = getManager().getRepository(Post);
-        const allPosts = await postRepository.find();
-        if (!allPosts) {
-            //if no found posts (posts = [])
-            return (ctx.status = 204);
-        } else {
+    /* ===|===|===|===|===| get '/api/posts' |===|===|===|===|===|===|===| */
+
+    public static async getAllPosts(ctx: Context): Promise<void> {
+        try {
+            //find all posts
+            ctx.body = await getAllPostsService();
+        } catch (err) {
+            ctx.body = { error: err.message };
+            ctx.status = 400;
+        }
+    }
+
+    /* ===|===|===|===|===| get '/api/posts/:id' |===|===|===|===|===|===|===| */
+
+    public static async getSpecifiedPost(ctx: Context): Promise<void> {
+        try {
+            //find one post by id
+            ctx.body = await getOnePostService(ctx.params.id);
+        } catch (err) {
+            ctx.body = { error: err.message };
+            ctx.status = err.statusCode || 500;
+        }
+    }
+
+    /* ===|===|===|===|===| get '/api/posts/:id/comments' |===|===|===|===|===|===| */
+
+    public static async getAllComments(ctx: Context): Promise<void> {
+        try {
+            //find all comments by post_id
+            ctx.body = await getCommentsService(ctx.params.id);
+        } catch (err) {
+            ctx.body = { error: err.message };
+            ctx.status = err.statusCode || 500;
+        }
+    }
+
+    /* ===|===|===|===|===| get '/api/posts/:id/categories' |===|===|===|===|===|===| */
+
+    public static async getAllCategories(ctx: Context): Promise<void> {
+        try {
+            //find all categories by post_id
+            ctx.body = await getCategoriesService(ctx.params.id);
+        } catch (err) {
+            ctx.body = { error: err.message };
+            ctx.status = err.statusCode || 500;
+        }
+    }
+
+    /* ===|===|===|===|===| get '/api/posts/:id/like' |===|===|===|===|===|===| */
+
+    public static async getAllLikes(ctx: Context): Promise<void> {
+        try {
+            //find all likes by post_id
+            ctx.body = await getLikesService(ctx.params.id);
+        } catch (err) {
+            ctx.body = { error: err.message };
+            ctx.status = err.statusCode || 500;
+        }
+    }
+
+    /* ===|===|===|===|===| post '/api/posts' |===|===|===|===|===|===|===| */
+
+    public static async createPost(ctx: Context): Promise<void> {
+        try {
+            //create new post
+            await createPostService(ctx.request.body);
+            ctx.status = 201;
+        } catch (err) {
+            ctx.body = { error: err.message };
+            ctx.status = err.statusCode || 500;
+        }
+    }
+
+    /* ===|===|===|===|===| post '/api/posts/:id/comments'|===|===|===|===|===|===|===| */
+
+    public static async createComment(ctx: Context): Promise<void> {
+        try {
+            //create new comment
+            await createCommentService(ctx.request.body, ctx.params.id);
+            ctx.status = 201;
+        } catch (err) {
+            ctx.body = { error: err.message };
+            ctx.status = err.statusCode || 500;
+        }
+    }
+
+    /* ===|===|===|===|===| post '/api/posts/:id/like' |===|===|===|===|===|===|===| */
+
+    public static async createLike(ctx: Context): Promise<void> {
+        try {
+            //create new like
+            await createLikeService(ctx.request.body, ctx.params.id);
+            ctx.status = 201;
+        } catch (err) {
+            ctx.body = { error: err.message };
+            ctx.status = err.statusCode || 500;
+        }
+    }
+
+    /* ===|===|===|===|===| patch '/api/posts/:id' |===|===|===|===|===|===|===| */
+
+    public static async updatePost(ctx: Context): Promise<void> {
+        try {
+            //update post (title?, content?, categories?) if exist
+            await updatePostService(ctx.request.body, ctx.params.id);
             ctx.status = 200;
-            ctx.body = allPosts;
+        } catch (err) {
+            ctx.body = { error: err.message };
+            ctx.status = err.statusCode || 500;
         }
     }
 
-    /* ===|===|===|===|===|===|===|===|===|===|===|===|===|===|===|===| */
+    /* ===|===|===|===|===| delete '/api/posts/:id' |===|===|===|===|===|===|===| */
 
-    public static async getSpecifiedPosts(ctx: Context): Promise<void | number> {
-        const postRepository: Repository<Post> = getManager().getRepository(Post);
-        const { id } = ctx.params;
-        if (/\D/g.test(id)) return (ctx.status = 500);
-
-        const onePost = await postRepository.findOne(id);
-        if (!onePost) {
-            //if no found post (post = [])
-            return (ctx.status = 204);
-        } else {
-            ctx.status = 200;
-            ctx.body = onePost;
-        }
-    }
-
-    /* ===|===|===|===|===|===|===|===|===|===|===|===|===|===|===|===| */
-
-    public static async getAllComments(ctx: Context): Promise<void | number> {
-        const commentRepository: Repository<Comment> = getManager().getRepository(Comment);
-        const { id } = ctx.params;
-        if (/\D/g.test(id)) return (ctx.status = 500);
-
-        const comments = await commentRepository.find({ where: { post_id: id } });
-        if (!comments.length) {
-            //if no found comments (comments = [])
-            return (ctx.status = 204);
-        } else {
-            ctx.status = 200;
-            ctx.body = comments;
-        }
-    }
-
-    /* ===|===|===|===|===|===|===|===|===|===|===|===|===|===|===|===| */
-
-    public static async getAllCategories(ctx: Context): Promise<void | number> {
-        const categoryRepository: Repository<Category> = getManager().getRepository(Category);
-        const { id } = ctx.params;
-        if (/\D/g.test(id)) return (ctx.status = 500);
-
-        const categories = await categoryRepository.find({ where: { post_id: id } });
-        if (!categories.length) {
-            //if no found categories (categories = [])
-            return (ctx.status = 204);
-        } else {
-            ctx.status = 200;
-            ctx.body = categories;
-        }
-    }
-
-    public static async getAllLikes(ctx: Context): Promise<void | number> {
-        const likeRepository: Repository<Like> = getManager().getRepository(Like);
-        const { id } = ctx.params;
-        if (/\D/g.test(id)) return (ctx.status = 500);
-
-        const likes = await likeRepository.find({ where: { post_id: id } });
-        if (!likes.length) {
-            //if no found likes (likes = [])
-            return (ctx.status = 204);
-        } else {
-            ctx.status = 200;
-            ctx.body = likes;
-        }
-    }
-
-    /* ===|===|===|===|===|===|===|===|===|===|===|===|===|===|===|===| */
-
-    public static async createPost(ctx: Context): Promise<void | number> {
-        const postRepository: Repository<Post> = getManager().getRepository(Post);
-        const { userByToken, title, content, categories } = ctx.request.body;
-        const validation = createPostVal(ctx.request.body);
-
-        if (validation.status === 200) {
-            const postToBeSaved: Post = new Post();
-            postToBeSaved.author = userByToken.login;
-            postToBeSaved.title = title;
-            postToBeSaved.content = content;
-            postToBeSaved.categories = categories;
-            postToBeSaved.user_id = userByToken.id;
-
-            // Create a new post
-            try {
-                await postRepository.save(postToBeSaved);
-                ctx.status = 200;
-            } catch (e) {
-                ctx.throw(400, e.message);
-            }
-        } else {
-            ctx.status = validation.status;
-            ctx.body = validation.body;
-        }
-    }
-
-    /* ===|===|===|===|===|===|===|===|===|===|===|===|===|===|===|===| */
-
-    public static async createComment(ctx: Context): Promise<void | number> {
-        const commentRepository: Repository<Comment> = getManager().getRepository(Comment);
-        const { userByToken, content } = ctx.request.body;
-        const { id } = ctx.params;
-        if (/\D/g.test(id)) return (ctx.status = 500);
-
-        const validation = createCommentVal(ctx.request.body);
-        if (validation.status === 200) {
-            const commentToBeSaved: Comment = new Comment();
-            commentToBeSaved.author = userByToken.login;
-            commentToBeSaved.content = content;
-            commentToBeSaved.post_id = id;
-            // Create a new post
-            try {
-                await commentRepository.save(commentToBeSaved);
-                ctx.status = 200;
-            } catch (e) {
-                ctx.throw(400, e.message);
-            }
-        } else {
-            ctx.status = validation.status;
-            ctx.body = validation.body;
-        }
-    }
-
-    /* ===|===|===|===|===|===|===|===|===|===|===|===|===|===|===|===| */
-
-    public static async createLike(ctx: Context): Promise<void | number> {
-        const likeRepository: Repository<Like> = getManager().getRepository(Like);
-        const { userByToken, type } = ctx.request.body;
-        const { id } = ctx.params;
-        if (/\D/g.test(id)) return (ctx.status = 500);
-
-        const validation = createLikeVal(ctx.request.body);
-        if (validation.status === 200) {
-            const likeToBeSaved: Like = new Like();
-            likeToBeSaved.author = userByToken.login;
-            likeToBeSaved.type = type;
-            likeToBeSaved.post_id = id;
-            try {
-                await likeRepository.save(likeToBeSaved);
-                ctx.status = 200;
-            } catch (e) {
-                ctx.throw(400, e.message);
-            }
-        } else {
-            ctx.status = validation.status;
-            ctx.body = validation.body;
-        }
-    }
-
-    /* ===|===|===|===|===|===|===|===|===|===|===|===|===|===|===|===| */
-
-    public static async updatePost(ctx: Context): Promise<void | number> {
-        const postRepository: Repository<Post> = getManager().getRepository(Post);
-        let { title, content, categories } = ctx.request.body;
-        const { id } = ctx.params;
-        if (/\D/g.test(id)) return (ctx.status = 500);
-        const post = await postRepository.findOne(id);
-
-        const validation = updatePostVal(ctx.request.body, post);
-
-        if (validation.status === 200) {
-            if (!title) title = post.title;
-            if (!content) content = post.content;
-            if (!categories) categories = post.categories;
-            await postRepository.update(id, { title, content, categories });
-
-            ctx.status = 200;
-        } else {
-            ctx.status = validation.status;
-            ctx.body = validation.body;
-        }
-    }
-
-    /* ===|===|===|===|===|===|===|===|===|===|===|===|===|===|===|===| */
-
-    public static async deletePost(ctx: Context): Promise<void | number> {
-        const postRepository: Repository<Post> = getManager().getRepository(Post);
+    public static async deletePost(ctx: Context): Promise<void> {
         const { userByToken } = ctx.request.body;
         const { id } = ctx.params;
-
-        if (/\D/g.test(id)) return (ctx.status = 500);
-        const post = await postRepository.findOne(id);
-
-        if (!post) return (ctx.status = 400);
-        if (post.user_id !== userByToken.id) {
-            ctx.body = "You don't have access for that";
-            ctx.status = 400;
-            return;
+        try {
+            //delete post
+            await deletePostService(userByToken, id);
+            ctx.status = 200;
+        } catch (err) {
+            ctx.body = { error: err.message };
+            ctx.status = err.statusCode || 500;
         }
+    }
 
-        await postRepository.delete(id);
-        ctx.status = 200;
+    /* ===|===|===|===|===| delete '/api/posts/:id/like' |===|===|===|===|===|===|===| */
+
+    public static async deleteLike(ctx: Context): Promise<void> {
+        const { userByToken } = ctx.request.body;
+        const { id } = ctx.params;
+        try {
+            //delete like
+            await deleteLikeService(userByToken, id);
+            ctx.status = 200;
+        } catch (err) {
+            ctx.body = { error: err.message };
+            ctx.status = err.statusCode || 500;
+        }
     }
 }

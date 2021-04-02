@@ -4,7 +4,7 @@ import {
     getOneUserService,
     createUserService,
     updateUserService,
-    deleteUser,
+    deleteUserService,
 } from '../services/userService';
 
 export default class UserController {
@@ -60,7 +60,7 @@ export default class UserController {
     public static async updateUserData(ctx: Context): Promise<void> {
         try {
             //update user (only admin has access?)
-            ctx.body = await updateUserService(ctx.request.body, ctx.params);
+            ctx.body = await updateUserService(ctx.request.body, ctx.params.id);
         } catch (err) {
             ctx.status = 400;
             ctx.body = { error: err.message };
@@ -72,7 +72,7 @@ export default class UserController {
     public static async deleteUser(ctx: Context): Promise<void> {
         try {
             //delete user by id
-            await deleteUser(ctx.params);
+            await deleteUserService(ctx.params.id);
             ctx.status = 200;
         } catch (err) {
             ctx.status = 400;

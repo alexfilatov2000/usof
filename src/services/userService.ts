@@ -45,7 +45,7 @@ export const updateUserService = async (bodyData: User, id: number) => {
     return bodyData;
 };
 
-export const deleteUser = async (id) => {
+export const deleteUserService = async (id) => {
     const user = await findOneUserById(id);
     if (!user) {
         throw new Error('No user found with this id');
