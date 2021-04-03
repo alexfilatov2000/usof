@@ -50,6 +50,7 @@ export const createCommentModel = async (data: Comment, post_id: number, user: U
     commentToBeSaved.author = user.login;
     commentToBeSaved.content = data.content;
     commentToBeSaved.post_id = post_id;
+    commentToBeSaved.user_id = user.id;
 
     await commentRepository.save(commentToBeSaved);
 };

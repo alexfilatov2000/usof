@@ -9,12 +9,10 @@ export const createPostSchema = Joi.object({
 
 export const createCommentSchema = Joi.object({
     content: Joi.string().min(10).required(),
-    userByToken: Joi.any(),
 });
 
 export const createLikeSchema = Joi.object({
     type: Joi.string().valid('like', 'dislike'),
-    userByToken: Joi.any(),
 });
 
 export const updatePostSchema = Joi.object({

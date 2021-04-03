@@ -1,6 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany, Index } from 'typeorm';
 import { Post } from './post';
 import { Like } from './like';
+import {Comment} from "./comment";
 
 @Entity('users')
 export class User {
@@ -48,4 +49,10 @@ export class User {
         onUpdate: 'CASCADE',
     })
     likes: Array<Like>;
+
+    @OneToMany('Comment', (comment: Comment) => comment.user, {
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+    })
+    comments: Array<Like>;
 }

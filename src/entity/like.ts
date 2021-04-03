@@ -1,9 +1,11 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, Unique } from 'typeorm';
 import { Post } from './post';
 import { User } from './user';
+import {Comment} from "./comment";
 
 @Entity('like')
 @Unique(['post_id', 'user_id'])
+@Unique(['comment_id', 'user_id'])
 export class Like {
     @PrimaryGeneratedColumn()
     id: number;
@@ -24,8 +26,11 @@ export class Like {
     @Column('int', { nullable: true })
     post_id: number;
 
-    @Column('int')
+    @Column('int', { nullable: true })
     user_id: number;
+
+    @Column('int', { nullable: true })
+    comment_id: number;
 
     @ManyToOne(() => Post, (post: Post) => post.likes, {
         onDelete: 'CASCADE',
@@ -40,4 +45,11 @@ export class Like {
     })
     @JoinColumn({ name: 'user_id' })
     user: User;
+
+    @ManyToOne(() => Comment, (comment: Comment) => comment.likes, {
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+    })
+    @JoinColumn({ name: 'comment_id' })
+    comment: Comment;
 }
