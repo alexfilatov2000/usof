@@ -7,6 +7,6 @@ authRouter.post('/api/auth/register', UserController.register);
 authRouter.post('/api/auth/login', UserController.login);
 authRouter.post('/api/auth/password-reset', UserController.passwordReset);
 authRouter.post('/api/auth/password-reset/:token', UserController.receiveNewPassword);
-authRouter.post('/api/auth/verify-email/:token', UserController.verifyEmail);
+authRouter.get('/api/auth/verify-email/:token', UserController.verifyEmail);
 
 export default authRouter.routes();
