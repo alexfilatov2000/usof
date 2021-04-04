@@ -1,4 +1,11 @@
-import { findAllUsers, findOneUserById, createUser, updateUser, deleteUserById } from '../models/userModels';
+import {
+    findAllUsers,
+    findOneUserById,
+    createUser,
+    updateUser,
+    deleteUserById,
+    addImageModel,
+} from '../models/userModels';
 import { createUserSchema, updateUserSchema } from '../lib/joi/joiShemaAuth';
 import { findUserByEmail, findUserByLogin, setHashPassword } from '../models/authModels';
 import { User } from '../entity/user';
@@ -52,4 +59,9 @@ export const deleteUserService = async (id: number): Promise<void> => {
     } else {
         await deleteUserById(id);
     }
+};
+
+export const addImageService = async (fileName: string, user: User): Promise<void> => {
+    if (!fileName) throw new Error("File name doesn't exist");
+    await addImageModel(fileName, user);
 };

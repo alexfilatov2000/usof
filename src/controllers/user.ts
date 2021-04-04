@@ -5,6 +5,7 @@ import {
     createUserService,
     updateUserService,
     deleteUserService,
+    addImageService,
 } from '../services/userService';
 
 export default class UserController {
@@ -44,10 +45,11 @@ export default class UserController {
         }
     }
 
-    /* ===|===|===|===|===|===|===|===|===|===|===|===|===|===|===|===| */
-    //todo: save img path to db
+    /* ===|===|===|===|===| post '/api/users/avatar' |===|===|===|===|===|===|===| */
+
     public static async setAvatar(ctx: Context): Promise<void> {
         try {
+            await addImageService(ctx.file.filename, ctx.userByToken);
             ctx.status = 200;
         } catch (e) {
             ctx.status = 400;

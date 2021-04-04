@@ -1,4 +1,4 @@
-import { getManager, Repository } from 'typeorm';
+import { getConnection, getManager, Repository } from 'typeorm';
 import { Post } from '../entity/post';
 import { Comment } from '../entity/comment';
 import { Category } from '../entity/category';
@@ -68,15 +68,19 @@ export const createLikeModel = async (data: Like, post_id: number, user: User): 
 export const updatePostModel = async (data: Post, id: number): Promise<void> => {
     const postRepository: Repository<Post> = getManager().getRepository(Post);
 
-    await postRepository.query(`DELETE FROM posts_categories WHERE post_id=${id}`);
-    for (const val of data.categories) {
-        await postRepository.query(`INSERT INTO posts_categories (post_id, category_id) VALUES (${id}, ${val})`);
-    }
+    const post = await postRepository.findOne(id, { relations: ['categories'] });
+    post.title = data.title;
+    post.content = data.content;
+    await postRepository.save(post);
 
-    await postRepository.update(id, {
-        title: data.title,
-        content: data.content,
-    });
+    await getConnection()
+        .createQueryBuilder()
+        .relation(Post, 'categories')
+        .of(id)
+        .addAndRemove(
+            data.categories,
+            post.categories.map((c) => c.id),
+        );
 };
 
 export const deletePostModel = async (id: number): Promise<void> => {

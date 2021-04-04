@@ -64,7 +64,7 @@ export const loginService = {
     },
     generateAccessToken: (user: { user: User }): string => {
         return jwt.sign(user, config.token.accessToken, {
-            expiresIn: '1h',
+            expiresIn: '24h',
         });
     },
 };

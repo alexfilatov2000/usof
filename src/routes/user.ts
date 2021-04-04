@@ -1,7 +1,7 @@
 import Router from 'koa-router';
 import UserController from '../controllers/user';
 const userRouter = new Router();
-import { upload } from '../lib/multerOptions';
+import { upload } from '../middleware/multerOptions';
 import { auth } from '../middleware/userAuth';
 import { adminAuth } from '../middleware/adminAuth';
 

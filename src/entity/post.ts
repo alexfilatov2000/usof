@@ -12,7 +12,6 @@ import { User } from './user';
 import { Comment } from './comment';
 import { Category } from './category';
 import { Like } from './like';
-// import {PostToCategory} from "./postToCategory";
 
 @Entity('post')
 export class Post {

@@ -39,3 +39,9 @@ export const updateUser = async (id: number, data: User): Promise<void> => {
         password: data.password,
     });
 };
+
+export const addImageModel = async (fileName: string, user: User): Promise<void> => {
+    const userRepository: Repository<User> = getManager().getRepository(User);
+    user.profile_picture = fileName;
+    await userRepository.save(user);
+};

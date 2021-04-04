@@ -13,9 +13,9 @@ export class Category {
     @Column({ nullable: true })
     description: string;
 
-    // @OneToMany(() => PostToCategory, postToCategory => postToCategory.category)
-    // postToCategories: PostToCategory[];
-
-    @ManyToMany(() => Post, (post) => post.categories, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
+    @ManyToMany(() => Post, (post) => post.categories, {
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+    })
     posts: Post[];
 }
