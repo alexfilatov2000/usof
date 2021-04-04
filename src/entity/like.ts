@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, Unique } from 'typeorm';
 import { Post } from './post';
 import { User } from './user';
-import {Comment} from "./comment";
+import { Comment } from './comment';
 
 @Entity('like')
 @Unique(['post_id', 'user_id'])
@@ -9,9 +9,6 @@ import {Comment} from "./comment";
 export class Like {
     @PrimaryGeneratedColumn()
     id: number;
-
-    @Column()
-    author: string;
 
     @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
     publish_date: string;

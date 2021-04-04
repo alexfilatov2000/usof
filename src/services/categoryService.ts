@@ -1,16 +1,14 @@
 import { createCategorySchema, updateCategorySchema } from '../lib/joi/joiShemaCategory';
 import { Category } from '../entity/category';
 import { CustomError } from '../lib/hadleErrors/handleErrror';
-import { Post } from '../entity/post';
 import {
     findCategoryModel,
     createCategoryModel,
     findOneCategoryModel,
     findAllPostsModel,
     updateCategoryModel,
-    deleteCategoryModel
+    deleteCategoryModel,
 } from '../models/categoryModels';
-
 
 export const getAllCategoryService = async (): Promise<Category[]> => {
     const categories = await findCategoryModel();
@@ -24,7 +22,7 @@ export const getOneCategoryService = async (id: number): Promise<Category> => {
     return category;
 };
 
-export const getAllPostsService = async (category_id: number): Promise<Post[]> => {
+export const getAllPostsService = async (category_id: number): Promise<Category[]> => {
     const posts = await findAllPostsModel(category_id);
     if (!posts.length) throw new CustomError('No post found', 204);
     return posts;

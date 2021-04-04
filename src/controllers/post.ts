@@ -105,7 +105,9 @@ export default class PostController {
     public static async createLike(ctx: Context): Promise<void> {
         try {
             //create new like
-            await createLikeService(ctx.request.body, ctx.params.id, ctx.userByToken);
+            await createLikeService.create(ctx.request.body, ctx.params.id, ctx.userByToken);
+            //update user rating
+            await createLikeService.updateRating(ctx.request.body, ctx.params.id);
             ctx.status = 201;
         } catch (err) {
             ctx.body = { error: err.message };
@@ -144,7 +146,9 @@ export default class PostController {
     public static async deleteLike(ctx: Context): Promise<void> {
         try {
             //delete like
-            await deleteLikeService(ctx.userByToken, ctx.params.id);
+            const deletedLike = await deleteLikeService.delete(ctx.userByToken, ctx.params.id);
+            //update user rating
+            await deleteLikeService.updateRating(ctx.params.id, deletedLike);
             ctx.status = 200;
         } catch (err) {
             ctx.body = { error: err.message };

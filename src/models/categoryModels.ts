@@ -1,6 +1,5 @@
 import { getManager, Repository } from 'typeorm';
 import { Category } from '../entity/category';
-import { Post } from '../entity/post';
 
 export const findCategoryModel = async (): Promise<Category[]> => {
     const categories: Repository<Category> = getManager().getRepository(Category);
@@ -12,9 +11,9 @@ export const findOneCategoryModel = async (id: number): Promise<Category> => {
     return categories.findOne(id);
 };
 
-export const findAllPostsModel = async (id: number): Promise<Post[]> => {
-    const posts: Repository<Post> = getManager().getRepository(Post);
-    return posts.find({ category_id: id });
+export const findAllPostsModel = async (id: number): Promise<Category[]> => {
+    const category: Repository<Category> = getManager().getRepository(Category);
+    return category.find({ where: { id }, relations: ['posts'] });
 };
 
 export const createCategoryModel = async (data: Category): Promise<void> => {

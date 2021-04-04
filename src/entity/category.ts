@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToMany } from 'typeorm';
+// import {PostToCategory} from "./postToCategory";
 import { Post } from './post';
 
 @Entity('category')
@@ -12,9 +13,9 @@ export class Category {
     @Column({ nullable: true })
     description: string;
 
-    @OneToMany('Post', (post: Post) => post.category, {
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE',
-    })
-    posts: Array<Post>;
+    // @OneToMany(() => PostToCategory, postToCategory => postToCategory.category)
+    // postToCategories: PostToCategory[];
+
+    @ManyToMany(() => Post, (post) => post.categories, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
+    posts: Post[];
 }

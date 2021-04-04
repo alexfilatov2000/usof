@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany, Index } from 'typeorm';
 import { Post } from './post';
 import { Like } from './like';
-import {Comment} from "./comment";
+import { Comment } from './comment';
 
 @Entity('users')
 export class User {

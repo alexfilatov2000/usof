@@ -3,7 +3,7 @@ import auth from './auth';
 import user from './user';
 import post from './post';
 import category from './category';
-import comment from "./comment";
+import comment from './comment';
 
 const router = new Router();
 const allRouters: any = new Router();

@@ -5,7 +5,7 @@ import {
     getOneCategoryService,
     getAllPostsService,
     updateCategoryService,
-    deleteCategoryService
+    deleteCategoryService,
 } from '../services/categoryService';
 
 export default class CategoryController {
@@ -33,7 +33,7 @@ export default class CategoryController {
         }
     }
 
-    /* ===|===|===|===|===| get '/api/categories:id/posts' |===|===|===|===|===|===|===| */
+    /* ===|===|===|===|===| get '/api/categories/:id/posts' |===|===|===|===|===|===|===| */
 
     public static async getAllPostsByCategoryId(ctx: Context): Promise<void> {
         try {

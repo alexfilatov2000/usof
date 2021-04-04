@@ -1,6 +1,6 @@
 import Router from 'koa-router';
 import CommentController from '../controllers/comment';
-import {auth} from "../middleware/userAuth";
+import { auth } from '../middleware/userAuth';
 
 const CommentRouter = new Router();
 

@@ -1,6 +1,6 @@
 import Router from 'koa-router';
 import CategoryController from '../controllers/category';
-import {adminAuth} from "../middleware/adminAuth";
+import { adminAuth } from '../middleware/adminAuth';
 
 const CategoryRouter = new Router();
 

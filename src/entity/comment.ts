@@ -1,15 +1,12 @@
-import {Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMany} from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
 import { Post } from './post';
-import {Like} from "./like";
-import {User} from "./user";
+import { Like } from './like';
+import { User } from './user';
 
 @Entity('comment')
 export class Comment {
     @PrimaryGeneratedColumn()
     id: number;
-
-    @Column()
-    author: string;
 
     @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
     publish_date: string;

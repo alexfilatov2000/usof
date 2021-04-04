@@ -1,5 +1,12 @@
-import {Context} from "koa";
-import {getCommentService, getLikesService, crateLikeService, updateCommentService, deleteCommentService, deleteLikeUnderCommentService} from "../services/commentService";
+import { Context } from 'koa';
+import {
+    getCommentService,
+    getLikesService,
+    crateLikeService,
+    updateCommentService,
+    deleteCommentService,
+    deleteLikeUnderCommentService,
+} from '../services/commentService';
 
 export default class CommentController {
     /* ===|===|===|===|===| get '/api/comments/:id' |===|===|===|===|===|===|===| */
@@ -83,6 +90,3 @@ export default class CommentController {
         }
     }
 }
-
-
-

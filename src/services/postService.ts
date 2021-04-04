@@ -9,7 +9,9 @@ import {
     createLikeModel,
     updatePostModel,
     deletePostModel,
-    deleteLikeModel,
+    deleteLikeUnderPost,
+    findOneLikeUnderPost,
+    findByIdsModel,
 } from '../models/postModels';
 import { CustomError } from '../lib/hadleErrors/handleErrror';
 import { Post } from '../entity/post';
@@ -18,6 +20,8 @@ import { Category } from '../entity/category';
 import { Like } from '../entity/like';
 import { createCommentSchema, createLikeSchema, createPostSchema, updatePostSchema } from '../lib/joi/joiShemaPost';
 import { User } from '../entity/user';
+import { findOneUserById } from '../models/userModels';
+import { updateUserRatingModel } from '../models/commentModels';
 
 export const getAllPostsService = async (): Promise<Post[]> => {
     const posts = await findAllPosts();
@@ -55,8 +59,9 @@ export const getLikesService = async (id: number): Promise<Like[]> => {
 export const createPostService = async (bodyData: Post, user: User): Promise<void> => {
     const { error } = createPostSchema.validate(bodyData);
     if (error) throw new CustomError(error.message, 400);
-
-    await createPostModel(bodyData, user);
+    //@ts-ignore
+    const commentsArr = await findByIdsModel(bodyData.categories);
+    await createPostModel(bodyData, user, commentsArr);
 };
 
 export const createCommentService = async (bodyData: Comment, post_id: number, user: User): Promise<void> => {
@@ -66,11 +71,22 @@ export const createCommentService = async (bodyData: Comment, post_id: number, u
     await createCommentModel(bodyData, post_id, user);
 };
 
-export const createLikeService = async (bodyData: Like, post_id: number, user: User): Promise<void> => {
-    const { error } = createLikeSchema.validate(bodyData);
-    if (error) throw new CustomError(error.message, 400);
+export const createLikeService = {
+    create: async (bodyData: Like, post_id: number, user: User): Promise<void> => {
+        const { error } = createLikeSchema.validate(bodyData);
+        if (error) throw new CustomError(error.message, 400);
 
-    await createLikeModel(bodyData, post_id, user);
+        await createLikeModel(bodyData, post_id, user);
+    },
+    updateRating: async (bodyData: Like, post_id: number): Promise<void> => {
+        const post = await findOnePost(post_id);
+        const user = await findOneUserById(post.user_id);
+        if (bodyData.type === 'dislike') {
+            await updateUserRatingModel(user.id, user.rating - 1);
+        } else {
+            await updateUserRatingModel(user.id, user.rating + 1);
+        }
+    },
 };
 
 export const updatePostService = async (bodyData: Post, post_id: number, user: User): Promise<void> => {
@@ -83,8 +99,16 @@ export const updatePostService = async (bodyData: Post, post_id: number, user: U
 
     if (!bodyData.title) bodyData.title = post.title;
     if (!bodyData.content) bodyData.content = post.content;
-    if (!bodyData.categories) bodyData.categories = post.categories;
 
+    if (!bodyData.categories) {
+        const post = await findOnePost(post_id);
+        //@ts-ignore
+        bodyData.categories = post.categories.map((item) => item.id);
+    } else {
+        //@ts-ignore
+        const categories = await findByIdsModel(bodyData.categories);
+        if (!categories.length) throw new Error("one of categories doesn't exist");
+    }
     await updatePostModel(bodyData, post_id);
 };
 
@@ -96,9 +120,22 @@ export const deletePostService = async (user: User, id: number): Promise<void> =
     await deletePostModel(id);
 };
 
-export const deleteLikeService = async (user: User, post_id: number): Promise<void> => {
-    const post = await findOnePost(post_id);
-    if (!post) throw new CustomError('No post found', 204);
+export const deleteLikeService = {
+    delete: async (user: User, post_id: number): Promise<Like> => {
+        const like = await findOneLikeUnderPost(post_id, user.id);
+        if (!like) throw new CustomError('No post found', 204);
 
-    await deleteLikeModel(post_id, user.id);
+        await deleteLikeUnderPost(like.id);
+        return like;
+    },
+    updateRating: async (post_id: number, like: Like): Promise<void> => {
+        const post = await findOnePost(post_id);
+        const user = await findOneUserById(post.user_id);
+
+        if (like.type === 'dislike') {
+            await updateUserRatingModel(user.id, user.rating + 1);
+        } else {
+            await updateUserRatingModel(user.id, user.rating - 1);
+        }
+    },
 };

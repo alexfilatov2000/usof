@@ -1,16 +1,23 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
+import {
+    Entity,
+    PrimaryGeneratedColumn,
+    Column,
+    ManyToOne,
+    JoinColumn,
+    OneToMany,
+    JoinTable,
+    ManyToMany,
+} from 'typeorm';
 import { User } from './user';
 import { Comment } from './comment';
 import { Category } from './category';
 import { Like } from './like';
+// import {PostToCategory} from "./postToCategory";
 
 @Entity('post')
 export class Post {
     @PrimaryGeneratedColumn()
     id: number;
-
-    @Column()
-    author: string;
 
     @Column()
     title: string;
@@ -28,9 +35,6 @@ export class Post {
     @Column()
     content: string;
 
-    @Column({ nullable: true })
-    categories: string | null;
-
     /*------------------------------------------------------*/
 
     @Column('int', { nullable: true })
@@ -44,16 +48,25 @@ export class Post {
     user: User;
 
     /*------------------------------------------------------*/
-
-    @Column('int', { nullable: true })
-    category_id: number;
-
-    @ManyToOne(() => Category, (category: Category) => category.posts, {
+    //many to many custom
+    // @OneToMany(() => PostToCategory, postToCategory => postToCategory.post)
+    // postToCategories: PostToCategory[];
+    @ManyToMany(() => Category, (category) => category.posts, {
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
     })
-    @JoinColumn({ name: 'category_id' })
-    category: Category;
+    @JoinTable({
+        name: 'posts_categories',
+        joinColumn: {
+            name: 'post_id',
+            referencedColumnName: 'id',
+        },
+        inverseJoinColumn: {
+            name: 'category_id',
+            referencedColumnName: 'id',
+        },
+    })
+    categories: Category[];
 
     /*------------------------------------------------------*/
 
