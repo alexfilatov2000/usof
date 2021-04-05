@@ -1,7 +1,8 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, Index } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, Index, BeforeInsert } from 'typeorm';
 import { Post } from './post';
 import { Like } from './like';
 import { Comment } from './comment';
+import argon2 from "argon2";
 
 @Entity('users')
 export class User {
@@ -55,4 +56,9 @@ export class User {
         onUpdate: 'CASCADE',
     })
     comments: Array<Like>;
+
+    // @BeforeInsert()
+    // async setPassword(password: string) {
+    //     this.password = await argon2.hash(password || this.password);
+    // }
 }

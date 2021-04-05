@@ -1,4 +1,10 @@
 import { loginSchema, registerSchema, remindPswByEmail, resetSchema } from '../lib/joi/joiShemaAuth';
+import jwt from 'jsonwebtoken';
+import { config } from '../config';
+import { getVerifyURL, verifyTemplate } from '../lib/mail/verifyEmailMail';
+import { transporter } from '../lib/mail/transporter';
+import { User } from '../entity/user';
+import { getPasswordResetURL, resetPasswordTemplate } from '../lib/mail/resetMail';
 import {
     findUserByEmail,
     findUserById,
@@ -9,12 +15,6 @@ import {
     updateUserPswById,
     updateUserStatusById,
 } from '../models/authModels';
-import jwt from 'jsonwebtoken';
-import { config } from '../config';
-import { getVerifyURL, verifyTemplate } from '../lib/mail/verifyEmailMail';
-import { transporter } from '../lib/mail/transporter';
-import { User } from '../entity/user';
-import { getPasswordResetURL, resetPasswordTemplate } from '../lib/mail/resetMail';
 
 /* ===|===|===|===|===|===|===|===|===|===|===|===|===|===|===|===| */
 
