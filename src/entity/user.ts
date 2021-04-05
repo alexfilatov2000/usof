@@ -1,8 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, Index, BeforeInsert } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, Index } from 'typeorm';
 import { Post } from './post';
 import { Like } from './like';
 import { Comment } from './comment';
-import argon2 from "argon2";
 
 @Entity('users')
 export class User {

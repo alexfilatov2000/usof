@@ -3,12 +3,6 @@
 // config.ts
 
 export const config = {
-    db: {
-        user: 'YOUR_USERNAME', //you should rename this field
-        host: 'localhost',
-        database: 'usof',
-        port: 5432,
-    },
     token: {
         accessToken: 'ACCESS_TOKEN_SECRET',
         resetToken: 'RESET_TOKEN_SECRET',
