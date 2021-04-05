@@ -116,6 +116,12 @@ I'm sure you do. So this is my custom interpretation.⬇️⬇️⬇️
 > npm run dev
 ```
 
+- if you want to fill your database with test data, just use seeds for this:
+
+```md
+> npm run seed:run
+```
+
 
 ## License
 
