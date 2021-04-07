@@ -1,17 +1,5 @@
 import { Context } from 'koa';
-import {
-    getAllPostsService,
-    getOnePostService,
-    getCommentsService,
-    getCategoriesService,
-    getLikesService,
-    createPostService,
-    createCommentService,
-    createLikeService,
-    updatePostService,
-    deletePostService,
-    deleteLikeService,
-} from '../services/postService';
+import * as service from '../services/postService';
 
 export default class PostController {
     /* ===|===|===|===|===| get '/api/posts' |===|===|===|===|===|===|===| */
@@ -19,7 +7,7 @@ export default class PostController {
     public static async getAllPosts(ctx: Context): Promise<void> {
         try {
             //find all posts
-            ctx.body = await getAllPostsService();
+            ctx.body = await service.getAllPostsService();
         } catch (err) {
             ctx.body = { error: err.message };
             ctx.status = 400;
@@ -31,7 +19,7 @@ export default class PostController {
     public static async getSpecifiedPost(ctx: Context): Promise<void> {
         try {
             //find one post by id
-            ctx.body = await getOnePostService(ctx.params.id);
+            ctx.body = await service.getOnePostService(ctx.params.id);
         } catch (err) {
             ctx.body = { error: err.message };
             ctx.status = err.statusCode || 500;
@@ -43,7 +31,7 @@ export default class PostController {
     public static async getAllComments(ctx: Context): Promise<void> {
         try {
             //find all comments by post_id
-            ctx.body = await getCommentsService(ctx.params.id);
+            ctx.body = await service.getCommentsService(ctx.params.id);
         } catch (err) {
             ctx.body = { error: err.message };
             ctx.status = err.statusCode || 500;
@@ -55,7 +43,7 @@ export default class PostController {
     public static async getAllCategories(ctx: Context): Promise<void> {
         try {
             //find all categories by post_id
-            ctx.body = await getCategoriesService(ctx.params.id);
+            ctx.body = await service.getCategoriesService(ctx.params.id);
         } catch (err) {
             ctx.body = { error: err.message };
             ctx.status = err.statusCode || 500;
@@ -67,7 +55,7 @@ export default class PostController {
     public static async getAllLikes(ctx: Context): Promise<void> {
         try {
             //find all likes by post_id
-            ctx.body = await getLikesService(ctx.params.id);
+            ctx.body = await service.getLikesService(ctx.params.id);
         } catch (err) {
             ctx.body = { error: err.message };
             ctx.status = err.statusCode || 500;
@@ -79,7 +67,7 @@ export default class PostController {
     public static async createPost(ctx: Context): Promise<void> {
         try {
             //create new post
-            await createPostService(ctx.request.body, ctx.userByToken);
+            await service.createPostService(ctx.request.body, ctx.userByToken);
             ctx.status = 201;
         } catch (err) {
             ctx.body = { error: err.message };
@@ -92,7 +80,7 @@ export default class PostController {
     public static async createComment(ctx: Context): Promise<void> {
         try {
             //create new comment
-            await createCommentService(ctx.request.body, ctx.params.id, ctx.userByToken);
+            await service.createCommentService(ctx.request.body, ctx.params.id, ctx.userByToken);
             ctx.status = 201;
         } catch (err) {
             ctx.body = { error: err.message };
@@ -105,9 +93,9 @@ export default class PostController {
     public static async createLike(ctx: Context): Promise<void> {
         try {
             //create new like
-            await createLikeService.create(ctx.request.body, ctx.params.id, ctx.userByToken);
+            await service.createLikeService.create(ctx.request.body, ctx.params.id, ctx.userByToken);
             //update user rating
-            await createLikeService.updateRating(ctx.request.body, ctx.params.id);
+            await service.createLikeService.updateRating(ctx.request.body, ctx.params.id);
             ctx.status = 201;
         } catch (err) {
             ctx.body = { error: err.message };
@@ -120,7 +108,7 @@ export default class PostController {
     public static async updatePost(ctx: Context): Promise<void> {
         try {
             //update post (title?, content?, categories?) if exist
-            await updatePostService(ctx.request.body, ctx.params.id, ctx.userByToken);
+            await service.updatePostService(ctx.request.body, ctx.params.id, ctx.userByToken);
             ctx.status = 200;
         } catch (err) {
             ctx.body = { error: err.message };
@@ -133,7 +121,7 @@ export default class PostController {
     public static async deletePost(ctx: Context): Promise<void> {
         try {
             //delete post
-            await deletePostService(ctx.userByToken, ctx.params.id);
+            await service.deletePostService(ctx.userByToken, ctx.params.id);
             ctx.status = 200;
         } catch (err) {
             ctx.body = { error: err.message };
@@ -146,9 +134,9 @@ export default class PostController {
     public static async deleteLike(ctx: Context): Promise<void> {
         try {
             //delete like
-            const deletedLike = await deleteLikeService.delete(ctx.userByToken, ctx.params.id);
+            const deletedLike = await service.deleteLikeService.delete(ctx.userByToken, ctx.params.id);
             //update user rating
-            await deleteLikeService.updateRating(ctx.params.id, deletedLike);
+            await service.deleteLikeService.updateRating(ctx.params.id, deletedLike);
             ctx.status = 200;
         } catch (err) {
             ctx.body = { error: err.message };

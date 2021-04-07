@@ -7,7 +7,7 @@
    "database": "usof",
    "synchronize": true,
    "logging": false,
-   "entities": ["src/entity/**/*.ts"],
+   "entities": ["src/entity/*.ts"],
    "migrations": ["src/migration/**/*.ts"],
    "subscribers": ["src/subscriber/**/*.ts"],
    "seeds": ["src/seeds/*.ts"],

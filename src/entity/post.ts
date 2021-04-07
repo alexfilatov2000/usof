@@ -11,7 +11,7 @@ import {
 import { User } from './user';
 import { Comment } from './comment';
 import { Category } from './category';
-import { Like } from './like';
+import { Like_to_post } from './like_to_post';
 
 @Entity('post')
 export class Post {
@@ -47,9 +47,7 @@ export class Post {
     user: User;
 
     /*------------------------------------------------------*/
-    //many to many custom
-    // @OneToMany(() => PostToCategory, postToCategory => postToCategory.post)
-    // postToCategories: PostToCategory[];
+
     @ManyToMany(() => Category, (category) => category.posts, {
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
@@ -75,9 +73,9 @@ export class Post {
     })
     comments: Array<Comment>;
 
-    @OneToMany('Like', (like: Like) => like.post, {
+    @OneToMany('Like_to_post', (like: Like_to_post) => like.post, {
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
     })
-    likes: Array<Category>;
+    likes_to_post: Array<Like_to_post>;
 }

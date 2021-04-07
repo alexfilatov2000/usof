@@ -1,12 +1,10 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, Unique } from 'typeorm';
 import { Post } from './post';
 import { User } from './user';
-import { Comment } from './comment';
 
-@Entity('like')
+@Entity('like_to_post')
 @Unique(['post_id', 'user_id'])
-@Unique(['comment_id', 'user_id'])
-export class Like {
+export class Like_to_post {
     @PrimaryGeneratedColumn()
     id: number;
 
@@ -20,33 +18,23 @@ export class Like {
     })
     type: 'like' | 'dislike';
 
-    @Column('int', { nullable: true })
+    @Column('int')
     post_id: number;
 
-    @Column('int', { nullable: true })
+    @Column('int')
     user_id: number;
 
-    @Column('int', { nullable: true })
-    comment_id: number;
-
-    @ManyToOne(() => Post, (post: Post) => post.likes, {
+    @ManyToOne(() => Post, (post: Post) => post.likes_to_post, {
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
     })
     @JoinColumn({ name: 'post_id' })
     post: Post;
 
-    @ManyToOne(() => User, (user: User) => user.likes, {
+    @ManyToOne(() => User, (user: User) => user.likes_to_post, {
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
     })
     @JoinColumn({ name: 'user_id' })
     user: User;
-
-    @ManyToOne(() => Comment, (comment: Comment) => comment.likes, {
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE',
-    })
-    @JoinColumn({ name: 'comment_id' })
-    comment: Comment;
 }

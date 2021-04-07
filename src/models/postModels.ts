@@ -2,7 +2,7 @@ import { getConnection, getManager, Repository } from 'typeorm';
 import { Post } from '../entity/post';
 import { Comment } from '../entity/comment';
 import { Category } from '../entity/category';
-import { Like } from '../entity/like';
+import { Like_to_post } from '../entity/like_to_post';
 import { User } from '../entity/user';
 
 export const findAllPosts = async (): Promise<Post[]> => {
@@ -25,8 +25,8 @@ export const findCategories = async (id: number): Promise<Category[]> => {
     return categoryRepository.find({ where: { post_id: id } });
 };
 
-export const findLikes = async (id: number): Promise<Like[]> => {
-    const likeRepository: Repository<Like> = getManager().getRepository(Like);
+export const findLikes = async (id: number): Promise<Like_to_post[]> => {
+    const likeRepository: Repository<Like_to_post> = getManager().getRepository(Like_to_post);
     return likeRepository.find({ where: { post_id: id } });
 };
 
@@ -54,10 +54,10 @@ export const createCommentModel = async (data: Comment, post_id: number, user: U
     await commentRepository.save(commentToBeSaved);
 };
 
-export const createLikeModel = async (data: Like, post_id: number, user: User): Promise<void> => {
-    const likeRepository: Repository<Like> = getManager().getRepository(Like);
+export const createLikeModel = async (data: Like_to_post, post_id: number, user: User): Promise<void> => {
+    const likeRepository: Repository<Like_to_post> = getManager().getRepository(Like_to_post);
 
-    const likeToBeSaved: Like = new Like();
+    const likeToBeSaved: Like_to_post = new Like_to_post();
     likeToBeSaved.type = data.type;
     likeToBeSaved.post_id = post_id;
     likeToBeSaved.user_id = user.id;
@@ -89,12 +89,12 @@ export const deletePostModel = async (id: number): Promise<void> => {
 };
 
 export const deleteLikeUnderPost = async (id: number): Promise<void> => {
-    const likeRepository: Repository<Like> = getManager().getRepository(Like);
+    const likeRepository: Repository<Like_to_post> = getManager().getRepository(Like_to_post);
     await likeRepository.delete(id);
 };
 
-export const findOneLikeUnderPost = async (post_id: number, user_id: number): Promise<Like> => {
-    const likeRepository: Repository<Like> = getManager().getRepository(Like);
+export const findOneLikeUnderPost = async (post_id: number, user_id: number): Promise<Like_to_post> => {
+    const likeRepository: Repository<Like_to_post> = getManager().getRepository(Like_to_post);
     return likeRepository.findOne({ post_id, user_id });
 };
 

@@ -1,6 +1,6 @@
 import { getManager, Repository } from 'typeorm';
 import { Comment } from '../entity/comment';
-import { Like } from '../entity/like';
+import { Like_to_comment } from '../entity/like_to_comment';
 import { User } from '../entity/user';
 
 export const findOneCommentModel = async (id: number): Promise<Comment> => {
@@ -8,15 +8,15 @@ export const findOneCommentModel = async (id: number): Promise<Comment> => {
     return comment.findOne(id);
 };
 
-export const findLikesModel = async (id: number): Promise<Like[]> => {
-    const likes: Repository<Like> = getManager().getRepository(Like);
+export const findLikesModel = async (id: number): Promise<Like_to_comment[]> => {
+    const likes: Repository<Like_to_comment> = getManager().getRepository(Like_to_comment);
     return likes.find({ where: { comment_id: id } });
 };
 
-export const createLikeModel = async (id: number, user: User, bodyData: Like): Promise<void> => {
-    const likeRepository: Repository<Like> = getManager().getRepository(Like);
+export const createLikeModel = async (id: number, user: User, bodyData: Like_to_comment): Promise<void> => {
+    const likeRepository: Repository<Like_to_comment> = getManager().getRepository(Like_to_comment);
 
-    const like: Like = new Like();
+    const like: Like_to_comment = new Like_to_comment();
     like.type = bodyData.type;
     like.comment_id = id;
     like.user_id = user.id;
@@ -39,12 +39,12 @@ export const deleteCommentModel = async (id: number): Promise<void> => {
     await comment.delete(id);
 };
 
-export const findOneLikeUnderComment = async (comment_id: number, user_id: number): Promise<Like> => {
-    const like: Repository<Like> = getManager().getRepository(Like);
+export const findOneLikeUnderComment = async (comment_id: number, user_id: number): Promise<Like_to_comment> => {
+    const like: Repository<Like_to_comment> = getManager().getRepository(Like_to_comment);
     return like.findOne({ comment_id, user_id });
 };
 
 export const deleteLikeUnderComment = async (id: number): Promise<void> => {
-    const like: Repository<Like> = getManager().getRepository(Like);
+    const like: Repository<Like_to_comment> = getManager().getRepository(Like_to_comment);
     await like.delete(id);
 };

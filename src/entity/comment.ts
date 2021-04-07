@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
 import { Post } from './post';
-import { Like } from './like';
+import { Like_to_comment } from './like_to_comment';
 import { User } from './user';
 
 @Entity('comment')
@@ -31,9 +31,9 @@ export class Comment {
     @JoinColumn({ name: 'user_id' })
     user: User;
 
-    @OneToMany('Like', (like: Like) => like.comment, {
+    @OneToMany(() => Like_to_comment, (like: Like_to_comment) => like.comment, {
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
     })
-    likes: Array<Like>;
+    likes_to_comment: Array<Like_to_comment>;
 }

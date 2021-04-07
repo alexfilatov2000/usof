@@ -1,6 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany, Index } from 'typeorm';
 import { Post } from './post';
-import { Like } from './like';
+import { Like_to_comment } from './like_to_comment';
+import { Like_to_post } from './like_to_post';
 import { Comment } from './comment';
 
 @Entity('users')
@@ -44,20 +45,21 @@ export class User {
     })
     posts: Array<Post>;
 
-    @OneToMany('Like', (like: Like) => like.user, {
+    @OneToMany('Like_to_comment', (like: Like_to_comment) => like.user, {
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
     })
-    likes: Array<Like>;
+    likes_to_comment: Array<Like_to_comment>;
+
+    @OneToMany('Like_to_post', (like: Like_to_post) => like.user, {
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+    })
+    likes_to_post: Array<Like_to_post>;
 
     @OneToMany('Comment', (comment: Comment) => comment.user, {
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
     })
-    comments: Array<Like>;
-
-    // @BeforeInsert()
-    // async setPassword(password: string) {
-    //     this.password = await argon2.hash(password || this.password);
-    // }
+    comments: Array<Comment>;
 }

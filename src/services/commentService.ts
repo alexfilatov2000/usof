@@ -2,7 +2,7 @@ import { createLikeSchema, createCommentSchema } from '../lib/joi/joiShemaPost';
 import { findOneUserById } from '../models/userModels';
 import { CustomError } from '../lib/hadleErrors/handleErrror';
 import { Comment } from '../entity/comment';
-import { Like } from '../entity/like';
+import { Like_to_comment } from '../entity/like_to_comment';
 import { User } from '../entity/user';
 import {
     findOneCommentModel,
@@ -21,14 +21,14 @@ export const getCommentService = async (id: number): Promise<Comment> => {
     return comment;
 };
 
-export const getLikesService = async (id: number): Promise<Like[]> => {
+export const getLikesService = async (id: number): Promise<Like_to_comment[]> => {
     const likes = await findLikesModel(id);
     if (!likes.length) throw new CustomError('No like found', 204);
     return likes;
 };
 
 export const crateLikeService = {
-    create: async (id: number, user: User, bodyData: Like): Promise<void> => {
+    create: async (id: number, user: User, bodyData: Like_to_comment): Promise<void> => {
         const { error } = createLikeSchema.validate(bodyData);
         if (error) throw new CustomError(error.message, 400);
 
@@ -37,7 +37,7 @@ export const crateLikeService = {
 
         await createLikeModel(id, user, bodyData);
     },
-    updateRating: async (comment_id: number, bodyData: Like): Promise<void> => {
+    updateRating: async (comment_id: number, bodyData: Like_to_comment): Promise<void> => {
         let cnt = -1;
         if (!bodyData.type) cnt = 1;
         const comment = await findOneCommentModel(comment_id);
@@ -68,14 +68,14 @@ export const deleteCommentService = async (id: number, user: User): Promise<void
 };
 
 export const deleteLikeUnderCommentService = {
-    delete: async (id: number, user: User): Promise<Like> => {
+    delete: async (id: number, user: User): Promise<Like_to_comment> => {
         const like = await findOneLikeUnderComment(id, user.id);
         if (!like) throw new CustomError('No found like', 204);
 
         await deleteLikeUnderComment(like.id);
         return like;
     },
-    updateRating: async (id: number, like: Like): Promise<void> => {
+    updateRating: async (id: number, like: Like_to_comment): Promise<void> => {
         const comment = await findOneCommentModel(id);
         const user = await findOneUserById(comment.user_id);
 

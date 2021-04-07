@@ -5,5 +5,5 @@ export const postgresDB = async (): Promise<void> => {
         .then(() => {
             console.log('Database connection established');
         })
-        .catch((err) => console.log(err));
+        .catch((err) => console.log(err.message));
 };
