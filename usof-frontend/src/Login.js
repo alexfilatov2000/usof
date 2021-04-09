@@ -1,39 +1,23 @@
-import {useState} from "react";
+import { useState } from "react";
 import { useHistory } from "react-router-dom";
-// import './css/style.css'
+import { fetchLogin } from "./redux/actions/userActions";
+import { connect } from 'react-redux'
 
-const Login = () => {
+const Login = ({userData, fetchLogin}) => {
     const [login, setLogin] = useState('');
     const [password, setPassword] = useState('');
-    const [error, setError] = useState(null);
     const history = useHistory();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         const user = {login, password};
-
-        let response = await fetch('http://localhost:5000/api/auth/login', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json;charset=utf-8'
-            },
-            body: JSON.stringify(user)
-        });
-        let result = await response.json();
-        if(!response.ok){
-            setError(result.error);
-        } else {
-            localStorage.setItem('accessToken', result.accessToken);
-            let x = parseJwt(result.accessToken);
-            console.log(x);
-            await history.push('/');
-        }
+        fetchLogin(user, history);
     }
 
     return (
         <div>
             <h1 className="second">Login</h1>
-            {error && <div>{error}</div>}
+            {userData.error && <div>{userData.error}</div>}
             <form onSubmit={handleSubmit}>
                 <div>
                     <input
@@ -63,12 +47,17 @@ const Login = () => {
     );
 }
 
-const parseJwt = (token) => {
-    try {
-        return JSON.parse(atob(token.split('.')[1]));
-    } catch (e) {
-        return null;
-    }
-};
 
-export default Login;
+const mapStateToProps = state => {
+    return {
+        userData: state.user
+    }
+}
+
+const mapDispatchToProps = dispatch => {
+    return {
+        fetchLogin: (user, history) => dispatch(fetchLogin(user, history))
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Login);

@@ -14,7 +14,6 @@ define(Like_to_comment, async (faker: typeof Faker) => {
 
     const like = new Like_to_comment();
     like.type = randomType;
-    like.post_id = randomPostId;
     like.user_id = randomUserId;
 
     return like;
