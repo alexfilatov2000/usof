@@ -1,8 +1,8 @@
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
-import Navbar from "./Navbar";
-import Register from "./Register";
+import Navbar from "./components/Navbar";
+import Register from "./components/Register";
 import Home from "./Home";
-import Login from "./Login";
+import Login from "./components/Login";
 import PasswordReset from "./PasswordReset";
 import TokenPswReset from "./TokenPswReset";
 

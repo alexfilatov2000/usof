@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useHistory } from "react-router-dom";
-import { fetchLogin } from "./redux/actions/userActions";
+import { fetchLogin } from "../redux/actions/userActions";
 import { connect } from 'react-redux'
 
 const Login = ({userData, fetchLogin}) => {
@@ -50,7 +50,7 @@ const Login = ({userData, fetchLogin}) => {
 
 const mapStateToProps = state => {
     return {
-        userData: state.user
+        userData: state.user_login
     }
 }
 

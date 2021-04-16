@@ -1,39 +1,26 @@
-import {useState} from "react";
+import { useState } from "react";
 import { useHistory } from "react-router-dom";
-// import './css/style.css'
+import { fetchRegister } from "../redux/actions/userActions";
+import { connect } from "react-redux";
 
-const Register = () => {
+const Register = ({userData, fetchRegister}) => {
     const [full_name, setFull_name] = useState('');
     const [login, setLogin] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [password2, setPassword2] = useState('');
-    const [error, setError] = useState(null);
     const history = useHistory();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         const user = { full_name, login, email, password, password2};
-
-        let response = await fetch('http://localhost:5000/api/auth/register', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json;charset=utf-8'
-            },
-            body: JSON.stringify(user)
-        });
-        let result = await response.json();
-        if(!response.ok){
-            setError(result.error);
-        } else {
-            await history.push('/login');
-        }
+        fetchRegister(user, history);
     }
 
     return (
         <div>
             <h1>Register</h1>
-            {error && <div>{error}</div>}
+            {userData.error && <div>{userData.error}</div>}
             <form onSubmit={handleSubmit}>
                 <div>
                     <input
@@ -96,5 +83,16 @@ const Register = () => {
         </div>
     );
 }
+const mapStateToProps = state => {
+    return {
+        userData: state.user_login
+    }
+}
 
-export default Register;
+const mapDispatchToProps = dispatch => {
+    return {
+        fetchRegister: (user, history) => dispatch(fetchRegister(user, history))
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Register);
