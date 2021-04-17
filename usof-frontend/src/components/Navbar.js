@@ -1,17 +1,17 @@
 import { Link } from "react-router-dom";
-import {connect} from "react-redux";
 import LogOut from "./LogOut";
+import { useSelector } from "react-redux";
 
-const Navbar = ({userData}) => {
-    console.log(userData.token)
+const Navbar = () => {
+    const user = useSelector(state => state.users)
     return (
         <nav className="navbar">
             <h1>The Usof Application</h1>
 
             <div className="links">
                 <Link to="/">Home</Link><br/>
-                {userData.token && <LogOut/>}
-                {!userData.token &&
+                {user.token && <LogOut/>}
+                {!user.token &&
                 <div>
                     <Link to="/register">register</Link><br/>
                     <Link to="/login">Login</Link><br/>
@@ -24,10 +24,4 @@ const Navbar = ({userData}) => {
     );
 }
 
-const mapStateToProps = state => {
-    return {
-        userData: state.user_login
-    }
-}
-
-export default connect(mapStateToProps, null)(Navbar);
+export default Navbar;

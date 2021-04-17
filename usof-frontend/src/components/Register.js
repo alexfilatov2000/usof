@@ -1,9 +1,12 @@
 import { useState } from "react";
 import { useHistory } from "react-router-dom";
-import { fetchRegister } from "../redux/actions/userActions";
-import { connect } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchRegister } from "../redux/users";
 
-const Register = ({userData, fetchRegister}) => {
+const Register = () => {
+    const dispatch = useDispatch();
+    const user = useSelector(state => state.users)
+
     const [full_name, setFull_name] = useState('');
     const [login, setLogin] = useState('');
     const [email, setEmail] = useState('');
@@ -13,14 +16,14 @@ const Register = ({userData, fetchRegister}) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const user = { full_name, login, email, password, password2};
-        fetchRegister(user, history);
+        const user = { full_name, login, email, password, password2 };
+        dispatch(fetchRegister(user, history));
     }
 
     return (
         <div>
             <h1>Register</h1>
-            {userData.error && <div>{userData.error}</div>}
+            {user.error && <div>{user.error}</div>}
             <form onSubmit={handleSubmit}>
                 <div>
                     <input
@@ -83,16 +86,5 @@ const Register = ({userData, fetchRegister}) => {
         </div>
     );
 }
-const mapStateToProps = state => {
-    return {
-        userData: state.user_login
-    }
-}
 
-const mapDispatchToProps = dispatch => {
-    return {
-        fetchRegister: (user, history) => dispatch(fetchRegister(user, history))
-    }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(Register);
+export default Register;

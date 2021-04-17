@@ -1,9 +1,12 @@
 import { useState } from "react";
 import { useHistory } from "react-router-dom";
-import { fetchLogin } from "../redux/actions/userActions";
-import { connect } from 'react-redux'
+import { fetchLogin } from "../redux/users";
+import { useDispatch, useSelector } from 'react-redux'
 
-const Login = ({userData, fetchLogin}) => {
+const Login = () => {
+    const dispatch = useDispatch()
+    const user = useSelector(state => state.users)
+
     const [login, setLogin] = useState('');
     const [password, setPassword] = useState('');
     const history = useHistory();
@@ -11,13 +14,13 @@ const Login = ({userData, fetchLogin}) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         const user = {login, password};
-        fetchLogin(user, history);
+        dispatch(fetchLogin(user, history));
     }
 
     return (
         <div>
             <h1 className="second">Login</h1>
-            {userData.error && <div>{userData.error}</div>}
+            {user.error && <div>{user.error}</div>}
             <form onSubmit={handleSubmit}>
                 <div>
                     <input
@@ -47,17 +50,4 @@ const Login = ({userData, fetchLogin}) => {
     );
 }
 
-
-const mapStateToProps = state => {
-    return {
-        userData: state.user_login
-    }
-}
-
-const mapDispatchToProps = dispatch => {
-    return {
-        fetchLogin: (user, history) => dispatch(fetchLogin(user, history))
-    }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(Login);
+export default Login;

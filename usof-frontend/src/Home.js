@@ -2,8 +2,6 @@ import {useHistory} from "react-router-dom";
 import {useState} from "react";
 
 const Home = () => {
-    console.log(localStorage.getItem('accessToken'));
-
     const [myFile, setMyFile] = useState('');
 
     const handleSubmit = async (e) => {

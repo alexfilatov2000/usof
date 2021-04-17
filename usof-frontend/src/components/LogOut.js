@@ -1,10 +1,12 @@
 import { Link } from "react-router-dom";
-import { fetchLogOut } from "../redux/actions/userActions";
-import { connect } from 'react-redux'
+import { useDispatch } from "react-redux";
+import { fetchLogOut } from "../redux/users";
 
-const LogOut = ({fetchLogOut}) => {
+const LogOut = () => {
+    const dispatch = useDispatch();
+
     const handleSubmit = () => {
-        fetchLogOut();
+        dispatch(fetchLogOut())
     }
 
     return (
@@ -14,10 +16,4 @@ const LogOut = ({fetchLogOut}) => {
     );
 }
 
-const mapDispatchToProps = dispatch => {
-    return {
-        fetchLogOut: () => dispatch(fetchLogOut())
-    }
-}
-
-export default connect(null, mapDispatchToProps)(LogOut);
+export default LogOut;

@@ -1,5 +1,14 @@
-import { createStore, compose, applyMiddleware } from 'redux';
-import thunk from 'redux-thunk';
-import { rootReducer } from "./rootReducer";
+import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit'
+import users from "./users";
 
-export default createStore(rootReducer, compose(applyMiddleware(thunk)));
+const middleware = getDefaultMiddleware({
+    immutableCheck: false,
+    serializableCheck: false,
+    thunk: true
+})
+
+export default configureStore({
+    reducer: {users},
+    middleware: middleware,
+    devTools: true
+})
