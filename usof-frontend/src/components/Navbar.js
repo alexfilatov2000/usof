@@ -1,26 +1,52 @@
-import { Link } from "react-router-dom";
+import { useHistory} from "react-router-dom";
 import LogOut from "./LogOut";
 import { useSelector } from "react-redux";
+import {AppBar, Toolbar, Button, makeStyles, createMuiTheme, ThemeProvider} from "@material-ui/core"
+
+export const useStyles = makeStyles({
+    link: {
+       margin: 10
+    },
+    title: {
+        flexGrow: 1
+    }
+})
 
 const Navbar = () => {
-    const user = useSelector(state => state.users)
+    const classes = useStyles();
+    const user = useSelector(state => state.users);
+    const history = useHistory()
+    const guestLinks = (
+        <div>
+            <Button
+                variant="contained"
+                className={classes.link}
+                onClick={() => history.push('/login') }
+            >
+                Log in
+            </Button>
+
+            <Button
+                variant="contained"
+                color="secondary"
+                onClick={() => history.push('/register') }
+            >
+                Sign up
+            </Button>
+        </div>
+    );
+
     return (
-        <nav className="navbar">
-            <h1>The Usof Application</h1>
+        <AppBar position="static">
+            <Toolbar>
+                <h1 className={classes.title}>The Usof Application</h1>
 
-            <div className="links">
-                <Link to="/">Home</Link><br/>
-                {user.token && <LogOut/>}
-                {!user.token &&
-                <div>
-                    <Link to="/register">register</Link><br/>
-                    <Link to="/login">Login</Link><br/>
-                    <Link to="/password-reset">password-reset</Link>
+                <div className="links">
+                    {user.token && <LogOut/>}
+                    {!user.token && guestLinks}
                 </div>
-                }
-
-            </div>
-        </nav>
+            </Toolbar>
+        </AppBar>
     );
 }
 

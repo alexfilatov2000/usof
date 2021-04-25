@@ -2,8 +2,11 @@ import { useState } from "react";
 import { useHistory } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchRegister } from "../redux/users";
+import {Box, Button, Container, TextField, Typography} from "@material-ui/core";
+import {useStyles} from "../styles/registerStyles"
 
 const Register = () => {
+    const classes = useStyles();
     const dispatch = useDispatch();
     const user = useSelector(state => state.users)
 
@@ -22,67 +25,78 @@ const Register = () => {
 
     return (
         <div>
-            <h1>Register</h1>
-            {user.error && <div>{user.error}</div>}
-            <form onSubmit={handleSubmit}>
-                <div>
-                    <input
-                        type="text"
-                        id="full_name"
-                        name="full_name"
-                        placeholder="Full Name"
-                        value={full_name}
-                        onChange={(e) => setFull_name(e.target.value)}
-                        required
-                    />
-                </div>
-                <div>
-                    <input
-                        type="text"
-                        id="login"
-                        name="login"
-                        placeholder="Login"
-                        value={login}
-                        onChange={(e) => setLogin(e.target.value)}
-                        required
-                    />
-                </div>
-                <div>
-                    <input
-                        type="text"
-                        id="email"
-                        name="email"
-                        placeholder="Email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                    />
-                </div>
-                <div>
-                    <input
-                        type="password"
-                        id="password"
-                        name="password"
-                        placeholder="Password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
-                    />
-                </div>
-                <div>
-                    <input
-                        type="password"
-                        id="password2"
-                        name="password2"
-                        placeholder="Confirm Password"
-                        value={password2}
-                        onChange={(e) => setPassword2(e.target.value)}
-                        required
-                    />
-                </div>
+            <Container className={classes.main}>
+                <Box display="flex" justifyContent="center" alignItems="center">
+                    <Typography variant="h5" color="textSecondary" gutterBottom>
+                        Register
+                    </Typography>
+                </Box>
 
-                <button>Sent</button>
-            </form>
+                {user.error && <div className={classes.error}>{user.error}</div>}
+
+                <Box display="flex" justifyContent="center" alignItems="center">
+                    <form onSubmit={handleSubmit}>
+                        <TextField className={classes.field}
+                            onChange={(e) => setFull_name(e.target.value)}
+                            label="Full Name"
+                            name="full_name"
+                            variant="outlined"
+                            value={full_name}
+                            fullWidth
+                            required
+                        />
+                        <TextField className={classes.field}
+                            onChange={(e) => setLogin(e.target.value)}
+                            label="Login"
+                            name="login"
+                            variant="outlined"
+                            value={login}
+                            fullWidth
+                            required
+                        />
+
+                        <TextField className={classes.field}
+                            onChange={(e) => setEmail(e.target.value)}
+                            label="Email"
+                            name="email"
+                            variant="outlined"
+                            value={email}
+                            fullWidth
+                            required
+                        />
+
+                        <TextField className={classes.field}
+                            onChange={(e) => setPassword(e.target.value)}
+                            label="Password"
+                            name="password"
+                            type="password"
+                            variant="outlined"
+                            value={password}
+                            fullWidth
+                            required
+                        />
+
+                        <TextField className={classes.field}
+                            onChange={(e) => setPassword2(e.target.value)}
+                            label="Confirm Password"
+                            name="password2"
+                            type="password"
+                            variant="outlined"
+                            value={password2}
+                            fullWidth
+                            required
+                        />
+                        <Button
+                            type="submit"
+                            color="secondary"
+                            variant="contained"
+                            fullWidth
+                        >
+                            Submit
+                        </Button>
+                    </form>
+                </Box>
+            </Container>
         </div>
     );
 }
