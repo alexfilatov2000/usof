@@ -3,8 +3,8 @@ import Navbar from "./components/Navbar";
 import Register from "./components/Register";
 import Home from "./Home";
 import Login from "./components/Login";
-import PasswordReset from "./PasswordReset";
-import TokenPswReset from "./TokenPswReset";
+import PasswordReset from "./components/PasswordReset";
+import NewPassword from "./components/NewPassword";
 
 
 function App() {
@@ -27,7 +27,7 @@ function App() {
                           <PasswordReset />
                       </Route>
                       <Route path="/password-reset/:token">
-                          <TokenPswReset />
+                          <NewPassword />
                       </Route>
                   </Switch>
               </div>

@@ -1,14 +1,14 @@
 import { useHistory} from "react-router-dom";
 import LogOut from "./LogOut";
 import { useSelector } from "react-redux";
-import {AppBar, Toolbar, Button, makeStyles, createMuiTheme, ThemeProvider} from "@material-ui/core"
+import {AppBar, Toolbar, Button, makeStyles, Link} from "@material-ui/core"
 
 export const useStyles = makeStyles({
     link: {
        margin: 10
     },
     title: {
-        flexGrow: 1
+        flexGrow: 1,
     }
 })
 
@@ -39,7 +39,7 @@ const Navbar = () => {
     return (
         <AppBar position="static">
             <Toolbar>
-                <h1 className={classes.title}>The Usof Application</h1>
+                <Link href="/" color="inherit" variant="h5" className={classes.title}>The Usof Application</Link>
 
                 <div className="links">
                     {user.token && <LogOut/>}

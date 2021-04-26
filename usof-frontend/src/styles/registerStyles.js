@@ -5,7 +5,6 @@ export const useStyles = makeStyles({
         marginTop: 10,
         marginBottom: 10,
         display: 'block',
-        width: 300,
         borderRadius: 5
     },
     main: {

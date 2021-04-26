@@ -1,5 +1,6 @@
 import {createSlice} from "@reduxjs/toolkit";
 import {config} from "../config";
+import axios from "axios";
 
 /* ===|===|===|===|===|===|===|===|===|===|===|===|===|===|===|===| */
 /** @Reducers**/
@@ -9,6 +10,7 @@ const slice = createSlice({
     initialState: {
         user: null,
         error: null,
+        isPending: false,
         token: localStorage.getItem('token')
     },
     reducers: {
@@ -34,6 +36,20 @@ const slice = createSlice({
         registerFailure: (state, action) => {
             state.user = null;
             state.error = action.payload;
+        },
+        resetFailure: (state, action) => {
+            state.error = action.payload;
+            state.isPending = false;
+        },
+        resetSuccess: (state, action) => {
+            state.error = null;
+            state.isPending = false;
+        },
+        resetPending: (state, action) => {
+            state.isPending = true;
+        },
+        newPswFailure: (state, action) => {
+            state.error = action.payload;
         }
     }
 })
@@ -42,23 +58,14 @@ export default slice.reducer;
 /* ===|===|===|===|===|===|===|===|===|===|===|===|===|===|===|===| */
 /** @Actions**/
 
-const { loginSuccess, loginFailure, logOut, registerSuccess, registerFailure } = slice.actions;
+const { loginSuccess, loginFailure, logOut, registerSuccess, registerFailure, resetFailure, resetSuccess, resetPending, newPswFailure} = slice.actions;
 export const fetchLogin = (user, history) => async dispatch => {
-    let res = await fetch(`${config.url}/api/auth/login`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json;charset=utf-8'
-        },
-        body: JSON.stringify(user)
-    });
-
-    let result = await res.json();
-
-    if(!res.ok) {
-        dispatch(loginFailure(result.error))
-    } else {
-        dispatch(loginSuccess({user: result.user, token: result.token}));
+    try {
+        const res = await axios.post(`${config.url}/api/auth/login`, user);
+        dispatch(loginSuccess({user: res.data.user, token: res.data.token}));
         history.push('/');
+    } catch (err) {
+        dispatch(loginFailure(err.response.data.error))
     }
 }
 
@@ -67,18 +74,32 @@ export const fetchLogOut = () => async dispatch => {
 }
 
 export const fetchRegister = (user, history) => async dispatch => {
-    let res = await fetch(`${config.url}/api/auth/register`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json;charset=utf-8'
-        },
-        body: JSON.stringify(user)
-    });
-    let result = await res.json();
-    if(!res.ok){
-        dispatch(registerFailure(result.error))
-    } else {
-        dispatch(registerSuccess())
-        await history.push('/login');
+    try {
+        await axios.post(`${config.url}/api/auth/register`, user);
+        dispatch(registerSuccess());
+        history.push('/login');
+    } catch (err) {
+        dispatch(registerFailure(err.response.data.error))
+    }
+}
+
+export const fetchReset = (user, history) => async dispatch => {
+    try {
+        dispatch(resetPending())
+        await axios.post(`${config.url}/api/auth/password-reset`, user);
+
+        dispatch(resetSuccess());
+        history.push('/login');
+    } catch (err) {
+        dispatch(resetFailure(err.response.data.error))
+    }
+}
+
+export const fetchVerify = (user, history, token) => async dispatch => {
+    try {
+        await axios.post(`${config.url}/api/auth/password-reset/${token}`, user);
+        history.push('/login');
+    } catch (err) {
+        dispatch(newPswFailure(err.response.data.error))
     }
 }
