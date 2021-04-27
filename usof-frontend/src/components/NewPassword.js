@@ -1,7 +1,7 @@
 import {useState} from "react";
 import { useHistory, useParams } from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
-import {fetchVerify} from "../redux/users";
+import {fetchNewPsw} from "../redux/users";
 import {useStyles} from "../styles/resetStyles";
 import {Box, Button, Container, TextField, Typography} from "@material-ui/core";
 
@@ -18,7 +18,7 @@ const NewPassword = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         const user = {password, password2};
-        dispatch(fetchVerify(user, history, token));
+        dispatch(fetchNewPsw(user, history, token));
     }
 
     return (

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import {Link, useHistory} from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import { fetchLogin } from "../redux/users";
 import { useDispatch, useSelector } from 'react-redux'
 import { TextField, Button, Typography, Box, Container} from '@material-ui/core';
@@ -64,7 +64,7 @@ const Login = () => {
 
             <Box display="flex" justifyContent="center" alignItems="center">
                 <Typography variant="subtitle1">
-                    Don’t have an account? <Link to="/password-reset">Sign up</Link>
+                    Forgot password? <Link to="/password-reset">link</Link>
                 </Typography>
             </Box>
         </div>

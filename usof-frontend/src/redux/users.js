@@ -50,6 +50,9 @@ const slice = createSlice({
         },
         newPswFailure: (state, action) => {
             state.error = action.payload;
+        },
+        VerifyEmailFailure: (state, action) => {
+            state.error = action.payload;
         }
     }
 })
@@ -58,7 +61,7 @@ export default slice.reducer;
 /* ===|===|===|===|===|===|===|===|===|===|===|===|===|===|===|===| */
 /** @Actions**/
 
-const { loginSuccess, loginFailure, logOut, registerSuccess, registerFailure, resetFailure, resetSuccess, resetPending, newPswFailure} = slice.actions;
+const { loginSuccess, loginFailure, logOut, registerSuccess, registerFailure, resetFailure, resetSuccess, resetPending, newPswFailure, VerifyEmailFailure} = slice.actions;
 export const fetchLogin = (user, history) => async dispatch => {
     try {
         const res = await axios.post(`${config.url}/api/auth/login`, user);
@@ -95,11 +98,21 @@ export const fetchReset = (user, history) => async dispatch => {
     }
 }
 
-export const fetchVerify = (user, history, token) => async dispatch => {
+export const fetchNewPsw = (user, history, token) => async dispatch => {
     try {
         await axios.post(`${config.url}/api/auth/password-reset/${token}`, user);
         history.push('/login');
     } catch (err) {
         dispatch(newPswFailure(err.response.data.error))
+    }
+}
+
+export const fetchVerifyEmail = (token) => async dispatch => {
+    try {
+        await axios.get(`${config.url}/api/auth/verify-email/${token}`);
+        // dispatch(VerifyEmailSuccess(err.response.data.error))
+    } catch (err) {
+        console.log(err.response.data.error)
+        dispatch(VerifyEmailFailure(err.response.data.error))
     }
 }

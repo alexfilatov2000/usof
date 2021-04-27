@@ -5,6 +5,7 @@ import Home from "./Home";
 import Login from "./components/Login";
 import PasswordReset from "./components/PasswordReset";
 import NewPassword from "./components/NewPassword";
+import VerifyEmail from "./components/VerifyEmail";
 
 
 function App() {
@@ -28,6 +29,9 @@ function App() {
                       </Route>
                       <Route path="/password-reset/:token">
                           <NewPassword />
+                      </Route>
+                      <Route path="/verify-email/:token">
+                          <VerifyEmail />
                       </Route>
                   </Switch>
               </div>
