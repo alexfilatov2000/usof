@@ -1,5 +1,6 @@
 import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit'
-import users from "./users";
+import auth from "./auth";
+import users from "./users"
 
 const middleware = getDefaultMiddleware({
     immutableCheck: false,
@@ -8,7 +9,7 @@ const middleware = getDefaultMiddleware({
 })
 
 export default configureStore({
-    reducer: {users},
+    reducer: {auth, users},
     middleware: middleware,
     devTools: true
 })

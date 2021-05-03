@@ -1,14 +1,14 @@
 import {useState} from "react";
 import { useHistory, useParams } from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
-import {fetchNewPsw} from "../redux/users";
-import {useStyles} from "../styles/resetStyles";
+import {fetchNewPsw} from "../../redux/auth";
+import {useStyles} from "../../styles/resetStyles";
 import {Box, Button, Container, TextField, Typography} from "@material-ui/core";
 
 const NewPassword = () => {
     const classes = useStyles();
     const dispatch = useDispatch()
-    const user = useSelector(state => state.users)
+    const user = useSelector(state => state.auth)
 
     const { token } = useParams();
     const [password, setPassword] = useState('');
@@ -32,7 +32,7 @@ const NewPassword = () => {
 
                 {user.error && <div className={classes.error}>{user.error}</div>}
 
-                <Box display="flex" justifyContent="center" alignItems="center">
+                <Box justifyContent="center" alignItems="center">
                     <form onSubmit={handleSubmit}>
                         <TextField className={classes.field}
                                    onChange={(e) => setPassword(e.target.value)}

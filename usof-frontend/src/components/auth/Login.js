@@ -1,14 +1,14 @@
 import { useState } from "react";
 import { Link, useHistory } from "react-router-dom";
-import { fetchLogin } from "../redux/users";
+import { fetchLogin } from "../../redux/auth";
 import { useDispatch, useSelector } from 'react-redux'
 import { TextField, Button, Typography, Box, Container} from '@material-ui/core';
-import { useStyles } from "../styles/loginStyles";
+import { useStyles } from "../../styles/loginStyles";
 
 const Login = () => {
     const classes = useStyles();
     const dispatch = useDispatch()
-    const user = useSelector(state => state.users)
+    const user = useSelector(state => state.auth)
 
     const [login, setLogin] = useState('');
     const [password, setPassword] = useState('');
@@ -29,7 +29,7 @@ const Login = () => {
                 </Box>
 
                 {user.error && <div className={classes.error}>{user.error}</div>}
-                <Box display="flex" justifyContent="center" alignItems="center">
+                <Box justifyContent="center" alignItems="center">
                     <form autoComplete="off" onSubmit={handleSubmit}>
                         <TextField className={classes.field}
                                    onChange={(e) => setLogin(e.target.value)}

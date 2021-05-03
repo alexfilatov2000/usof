@@ -1,14 +1,14 @@
 import { useState } from "react";
 import { useHistory } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchRegister } from "../redux/users";
+import { fetchRegister } from "../../redux/auth";
 import {Box, Button, Container, TextField, Typography} from "@material-ui/core";
-import {useStyles} from "../styles/registerStyles"
+import {useStyles} from "../../styles/registerStyles"
 
 const Register = () => {
     const classes = useStyles();
     const dispatch = useDispatch();
-    const user = useSelector(state => state.users)
+    const user = useSelector(state => state.auth)
 
     const [full_name, setFull_name] = useState('');
     const [login, setLogin] = useState('');
@@ -34,7 +34,7 @@ const Register = () => {
 
                 {user.error && <div className={classes.error}>{user.error}</div>}
 
-                <Box display="flex" justifyContent="center" alignItems="center">
+                <Box justifyContent="center" alignItems="center">
                     <form onSubmit={handleSubmit}>
                         <TextField className={classes.field}
                             onChange={(e) => setFull_name(e.target.value)}

@@ -1,11 +1,11 @@
 import { useParams } from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
-import { fetchVerifyEmail } from "../redux/users";
+import { fetchVerifyEmail } from "../../redux/auth";
 import {Box, createMuiTheme, makeStyles, MuiThemeProvider, Typography} from "@material-ui/core";
 import {useEffect} from "react";
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import ErrorIcon from '@material-ui/icons/Error';
-import {parseJwt} from "../util/parseToken";
+import {parseJwt} from "../../util/parseToken";
 
 const theme = createMuiTheme({
     palette: {
@@ -41,7 +41,7 @@ const useStyles = makeStyles({
 const VerifyEmail = () => {
     const classes = useStyles();
     const dispatch = useDispatch();
-    const user = useSelector(state => state.users);
+    const user = useSelector(state => state.auth);
     const { token } = useParams();
     const data = parseJwt(token);
 

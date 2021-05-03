@@ -1,14 +1,14 @@
 import {useState} from "react";
 import { useHistory } from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
-import {fetchReset} from "../redux/users";
+import {fetchReset} from "../../redux/auth";
 import {Box, Button, Container, TextField, Typography} from "@material-ui/core";
-import {useStyles} from "../styles/resetStyles";
+import {useStyles} from "../../styles/resetStyles";
 
 const PasswordReset = () => {
     const classes = useStyles();
     const dispatch = useDispatch();
-    const user = useSelector(state => state.users);
+    const user = useSelector(state => state.auth);
 
     const [email, setEmail] = useState('');
     const history = useHistory();
@@ -31,7 +31,7 @@ const PasswordReset = () => {
 
                 {user.error && <div className={classes.error}>{user.error}</div>}
 
-                <Box display="flex" justifyContent="center" alignItems="center">
+                <Box justifyContent="center" alignItems="center">
                     <form onSubmit={handleSubmit}>
                         <TextField className={classes.field}
                             onChange={(e) => setEmail(e.target.value)}
