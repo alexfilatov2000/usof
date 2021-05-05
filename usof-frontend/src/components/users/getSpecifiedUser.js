@@ -1,16 +1,28 @@
 import {useDispatch, useSelector} from "react-redux";
-import {Card, CardHeader, Grid, IconButton, makeStyles} from "@material-ui/core";
+import {Box, makeStyles, Typography} from "@material-ui/core";
 import {useEffect} from "react";
 import {getOneUser} from "../../redux/users";
-import {DeleteOutlined} from "@material-ui/icons";
 import {useParams} from "react-router-dom";
+import {config} from "../../config";
 
 const useStyles = makeStyles({
-    title: {
-        background: "linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(9,9,121,1) 52%, rgba(0,212,255,1) 100%)",
-        color: "white",
-        margin: "20px 0",
-        height: 150
+    image: {
+        border: "1px solid black",
+        padding: 10,
+        flex: "1"
+    },
+    data: {
+        border: "1px solid black",
+        padding: 10,
+        flex: "4"
+    },
+    admin: {
+        color: "red",
+        display: "inline",
+        verticalAlign: "super"
+    },
+    notVerified: {
+        color: "red",
     }
 })
 
@@ -24,15 +36,53 @@ const GetSpecifiedUser = () => {
         dispatch(getOneUser(id))
     }, [])
 
-    console.log(user);
-    return (
+    const admin = (
+        <div style={{display: "inline"}}>
+            <Typography variant="h5" className={classes.admin}>
+                &nbsp; *admin*
+            </Typography>
+        </div>
+    );
+
+    const notVerified = (
         <div>
+            <Typography variant="h6" className={classes.notVerified}>
+                User is <b>Not Verified!</b>
+            </Typography>
+        </div>
+    );
+
+    return (
+        <div >
             {user.specUser &&
-            <div>
-                {user.specUser.login}<br/>
-                {user.specUser.email}<br/>
-                {user.specUser.full_name}
-            </div>
+            <Box display="flex" flexDirection="row" p={1} m={1}>
+                <Box className={classes.image}  p={1}>
+                    <img src={`${config.url}/${user.specUser.profile_picture}`} alt="icon" />
+                </Box>
+
+                <Box className={classes.data}  p={1}>
+
+                    <Typography variant="h3">
+                        {user.specUser.full_name}
+                        {user.specUser.role === 'admin' && admin}
+                    </Typography>
+                    <br/>
+                    <Typography variant="h5" >
+                        login: {user.specUser.login}
+                    </Typography>
+
+                    <Typography variant="h5" >
+                        email: {user.specUser.email}
+                    </Typography>
+                    <br/>
+                    <Typography variant="h5" color="textSecondary">
+                        Rating: {user.specUser.rating}
+                    </Typography>
+                    <br/>
+                    {!user.specUser.isVerified && notVerified}
+                </Box>
+
+            </Box>
             }
         </div>
     );

@@ -8,39 +8,30 @@ import NewPassword from "./components/auth/NewPassword";
 import VerifyEmail from "./components/auth/VerifyEmail";
 import GetAllUsers from "./components/users/getAllUsers";
 import GetSpecifiedUser from "./components/users/getSpecifiedUser";
+import {useSelector} from "react-redux";
+import PublicRoute from "./components/PublicRoute";
 
 
 function App() {
+  const auth = useSelector(state => state.auth);
+
   return (
       <Router>
           <div className="App">
               <Navbar>
                   <div className="auth">
                       <Switch>
-                          <Route exact path="/">
-                              <Home />
-                          </Route>
-                          <Route path="/register">
-                              <Register />
-                          </Route>
-                          <Route path="/login">
-                              <Login />
-                          </Route>
-                          <Route exact path="/password-reset">
-                              <PasswordReset />
-                          </Route>
-                          <Route path="/password-reset/:token">
-                              <NewPassword />
-                          </Route>
-                          <Route path="/verify-email/:token">
-                              <VerifyEmail />
-                          </Route>
-                          <Route exact path="/users">
-                              <GetAllUsers />
-                          </Route>
-                          <Route path="/users/:id">
-                              <GetSpecifiedUser />
-                          </Route>
+
+                          <Route exact path="/" component={Home}/>
+                          <Route exact path="/users" component={GetAllUsers}/>
+                          <Route path="/users/:id" component={GetSpecifiedUser}/>
+
+                          <PublicRoute component={Register} exact path="/register" token={auth.token}/>
+                          <PublicRoute component={Login} exact path="/login" token={auth.token}/>
+                          <PublicRoute component={PasswordReset} exact path="/password-reset" token={auth.token}/>
+                          <PublicRoute component={NewPassword} exact path="/password-reset/:token" token={auth.token}/>
+                          <PublicRoute component={VerifyEmail} exact path="/verify-email/:token" token={auth.token}/>
+
                       </Switch>
                   </div>
               </Navbar>

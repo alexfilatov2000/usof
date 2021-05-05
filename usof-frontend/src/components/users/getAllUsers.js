@@ -1,16 +1,27 @@
 import {useDispatch, useSelector} from "react-redux";
-import {Card, CardHeader, Grid, IconButton, makeStyles} from "@material-ui/core";
+import {Card, CardContent, Grid, IconButton, makeStyles, Typography, Box} from "@material-ui/core";
 import {useEffect} from "react";
-import {getUsers} from "../../redux/users";
+import {getUsers, deleteUser} from "../../redux/users";
 import {DeleteOutlined} from "@material-ui/icons";
-import {Link, useHistory} from "react-router-dom";
+import {Link} from "react-router-dom";
+import {config} from "../../config";
+import {getRole} from "../../util/getRole";
 
 const useStyles = makeStyles({
-    title: {
-        background: "linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(9,9,121,1) 52%, rgba(0,212,255,1) 100%)",
-        color: "white",
-        margin: "20px 0",
-        height: 150
+    image: {
+        width: 70,
+        border: "1px solid black",
+        borderRadius: 100
+
+    },
+    imgPlace: {
+        flex: 2,
+    },
+    dataPlace: {
+        flex: 3
+    },
+    iconPlace: {
+        flex: 1
     }
 })
 
@@ -18,11 +29,17 @@ const GetAllUsers = () => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const user = useSelector(state => state.users);
-    const history = useHistory();
+    const auth = useSelector(state => state.auth);
+
+    const role = getRole(auth.token);
 
     useEffect(() => {
         dispatch(getUsers())
     }, [dispatch])
+
+    const func = (id) => {
+        dispatch(deleteUser(id, auth.token))
+    }
 
     return (
         <div>
@@ -30,17 +47,32 @@ const GetAllUsers = () => {
                 {user.users.map(item => (
                     <Grid item xs={12} md={6} lg={3} key={item.id}>
                         <Card elevation={1}>
+                            <CardContent>
+                                <Box display="flex">
+                                    <Box className={classes.imgPlace}>
+                                        <img className={classes.image} src={`${config.url}/${item.profile_picture}`} alt="icon" />
+                                    </Box>
 
-                            <CardHeader
-                                action={
-                                    <IconButton >
-                                        <DeleteOutlined />
-                                    </IconButton>
-                                }
+                                    <Box className={classes.dataPlace}>
+                                        <Typography component="h5" variant="h5" color="textSecondary">
+                                            <Link to={'/users/'+item.id}>{item.full_name}</Link>
+                                        </Typography>
 
-                                title={<Link to={'/users/'+item.id}>{item.login}</Link>}
-                                subheader={item.full_name}
-                            />
+                                        <Typography component="h5" variant="h6" color="textSecondary">
+                                            {item.login}
+                                        </Typography>
+                                    </Box>
+
+                                    {role === 'admin' &&
+                                        <Box>
+                                            <IconButton className={classes.iconPlace} onClick={() => func(item.id)}>
+                                                <DeleteOutlined />
+                                            </IconButton>
+                                        </Box>
+                                    }
+
+                                </Box>
+                            </CardContent>
                         </Card>
                     </Grid>
                 ))}

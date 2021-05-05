@@ -35,6 +35,7 @@ export const saveNewUser = async (full_name: string, login: string, email: strin
     userToBeSaved.login = login;
     userToBeSaved.email = email;
     userToBeSaved.password = password;
+    userToBeSaved.profile_picture = 'person-icon.png';
     return await user.save(userToBeSaved);
 };
 
