@@ -3,7 +3,7 @@ import path from 'path';
 
 const limits = {
     fields: 10, //Number of non-file fields
-    fileSize: 1024 * 1024, //File Size Unit b
+    fileSize: 10024 * 1024, //File Size Unit b
     files: 1, //Number of documents
 };
 
@@ -17,4 +17,14 @@ const storage = multer.diskStorage({
     },
 });
 
-export const upload = multer({ storage, limits });
+export const upload = multer({
+    storage,
+    limits,
+    fileFilter: (req, file, cb) => {
+        if (file.mimetype == "image/png" || file.mimetype == "image/jpg" || file.mimetype == "image/jpeg") {
+            cb(null, true);
+        } else {
+            cb(null, false);
+        }
+    }
+});

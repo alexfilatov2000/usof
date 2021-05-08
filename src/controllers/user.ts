@@ -49,6 +49,7 @@ export default class UserController {
 
     public static async setAvatar(ctx: Context): Promise<void> {
         try {
+            if (!ctx.file) throw new Error('Only .png, .jpg and .jpeg format allowed!');
             await addImageService(ctx.file.filename, ctx.userByToken);
             ctx.status = 200;
         } catch (e) {

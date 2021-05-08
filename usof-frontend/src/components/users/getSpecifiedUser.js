@@ -1,15 +1,16 @@
 import {useDispatch, useSelector} from "react-redux";
-import {Box, makeStyles, Typography} from "@material-ui/core";
-import {useEffect} from "react";
-import {getOneUser} from "../../redux/users";
-import {useParams} from "react-router-dom";
+import {Box, Button, makeStyles, Typography} from "@material-ui/core";
+import {useEffect, useState} from "react";
+import {getOneUser, editIMG} from "../../redux/users";
+import {useHistory, useParams} from "react-router-dom";
 import {config} from "../../config";
+import {compareIds} from "../../util/compareIds";
 
 const useStyles = makeStyles({
     image: {
         border: "1px solid black",
         padding: 10,
-        flex: "1"
+        flex: "1",
     },
     data: {
         border: "1px solid black",
@@ -23,18 +24,48 @@ const useStyles = makeStyles({
     },
     notVerified: {
         color: "red",
+    },
+    imgSize: {
+        width: 300,
+        height: 300
+    },
+    error: {
+        color: "red",
+        fontWeight: "bold",
+        border: "1px solid red",
+        borderRadius: 5,
+        padding: 5,
+        marginBottom: 5
     }
 })
 
 const GetSpecifiedUser = () => {
+    const [myFile, setMyFile] = useState(null);
+
     const classes = useStyles();
     const dispatch = useDispatch();
     const user = useSelector(state => state.users);
+    const auth = useSelector(state => state.auth);
+    const history = useHistory();
+
     const { id } = useParams();
+    const edit = compareIds(auth.token, id)
+
+
+    const editPic = (e) => {
+        e.preventDefault();
+        console.dir(myFile);
+
+        const data = new FormData();
+        data.append('upload', myFile);
+        dispatch(editIMG(data, auth.token, history))
+    }
 
     useEffect(() => {
+        console.log(id);
         dispatch(getOneUser(id))
-    }, [])
+    }, []);
+
 
     const admin = (
         <div style={{display: "inline"}}>
@@ -54,10 +85,51 @@ const GetSpecifiedUser = () => {
 
     return (
         <div >
+            {/*{user.isPending && <div>загрузка</div>}*/}
             {user.specUser &&
             <Box display="flex" flexDirection="row" p={1} m={1}>
                 <Box className={classes.image}  p={1}>
-                    <img src={`${config.url}/${user.specUser.profile_picture}`} alt="icon" />
+                    <img src={`${config.url}/${user.specUser.profile_picture}`} alt="icon" className={classes.imgSize}/>
+                    {user.error && <div className={classes.error}>{user.error}</div>}
+                    {edit &&
+                    <form onSubmit={editPic}>
+                        <Button
+                            variant="contained"
+                            component="label"
+                        >
+                            Upload File
+                            <input
+                                hidden
+                                type="file"
+                                id="upload"
+                                name="upload"
+                                onChange={(e) => setMyFile(e.target.files[0])}
+                                required
+                            />
+                        </Button>
+
+                        {!myFile ? (
+                            <Button
+                                type="submit"
+                                color="secondary"
+                                variant="contained"
+                                fullWidth
+                                disabled
+                            >
+                                Edit
+                            </Button>
+                        ) : (
+                            <Button
+                                type="submit"
+                                color="secondary"
+                                variant="contained"
+                                fullWidth
+                            >
+                                Edit
+                            </Button>
+                        ) }
+                    </form>
+                    }
                 </Box>
 
                 <Box className={classes.data}  p={1}>

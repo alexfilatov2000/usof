@@ -1,5 +1,6 @@
 import { getManager, Repository } from 'typeorm';
 import { User } from '../entity/user';
+import {config} from "../config";
 
 export const findAllUsers = async (): Promise<User[]> => {
     const user: Repository<User> = getManager().getRepository(User);
@@ -26,6 +27,7 @@ export const createUser = async (data: User): Promise<User> => {
     userToBeSaved.password = data.password;
     userToBeSaved.role = data.role;
     userToBeSaved.isVerified = true;
+    userToBeSaved.profile_picture = config.defaultPicture;
     return await user.save(userToBeSaved);
 };
 

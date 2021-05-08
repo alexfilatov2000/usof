@@ -18,6 +18,7 @@ const slice = createSlice({
             localStorage.setItem('token', action.payload.token);
             state.user = action.payload.user;
             state.token = localStorage.getItem('token');
+            state.error = null;
         },
         loginFailure : (state, action) => {
             state.user = null;
@@ -111,7 +112,7 @@ export const fetchVerifyEmail = (token) => async dispatch => {
         await axios.get(`${config.url}/api/auth/verify-email/${token}`);
         // dispatch(VerifyEmailSuccess(err.response.data.error))
     } catch (err) {
-        console.log(err.response.data.error)
+        // console.log(err.response.data.error)
         dispatch(VerifyEmailFailure(err.response.data.error))
     }
 }

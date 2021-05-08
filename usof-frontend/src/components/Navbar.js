@@ -1,54 +1,15 @@
 import { useHistory} from "react-router-dom";
 import LogOut from "./auth/LogOut";
 import { useSelector } from "react-redux";
-import {
-    AppBar,
-    Toolbar,
-    Button,
-    makeStyles,
-    Link,
-    Typography,
-    Drawer,
-    List,
-    ListItem,
-    ListItemText
-} from "@material-ui/core"
-
-const drawerWidth = 240;
-const useStyles = makeStyles((theme) => ({
-    link: {
-       margin: 10
-    },
-    title: {
-        flexGrow: 1,
-    },
-    sideTitle: {
-        padding: theme.spacing(2),
-        // textAlign: "center"
-    },
-    drawer: {
-        width: drawerWidth,
-    },
-    drawerPaper: {
-        width: drawerWidth,
-    },
-    root: {
-        display: 'flex',
-    },
-    page: {
-        // background: '#f9f9f9',
-        width: '100%',
-    },
-    appBar: {
-        width: `calc(100% - ${drawerWidth}px)`,
-        marginLeft: drawerWidth,
-    },
-    toolbar: theme.mixins.toolbar,
-}));
+import { useStyles } from "../styles/navStyles";
+import { AppBar, Toolbar, Button, Link, Typography, Drawer, List, ListItem, ListItemText } from "@material-ui/core";
+import { getRole } from "../util/getRole";
 
 const Navbar = ({ children }) => {
     const classes = useStyles();
     const user = useSelector(state => state.auth);
+    const role = getRole(user.token);
+
     const history = useHistory()
     const guestLinks = (
         <div>
@@ -70,7 +31,7 @@ const Navbar = ({ children }) => {
         </div>
     );
 
-    const menuItems = [
+    const publicItems = [
         {
             text: 'Users',
             path: '/users'
@@ -79,7 +40,38 @@ const Navbar = ({ children }) => {
             text: 'Categories',
             path: '/categories'
         },
+        {
+            text: 'Posts',
+            path: '/posts'
+        },
     ];
+
+    const privateItems = [
+        {
+            text: 'Create User',
+            path: '/userCreate'
+        }
+    ];
+
+    const mapPrivateItems = (
+        <div>
+            <br/>
+            <Typography variant="h6" color="textSecondary" className={classes.adminTitle}>
+                PRIVATE
+            </Typography>
+            <List>
+                {privateItems.map((item) => (
+                    <ListItem
+                        button
+                        key={item.text}
+                        onClick={() => history.push(item.path)}
+                    >
+                        <ListItemText primary={item.text} />
+                    </ListItem>
+                ))}
+            </List>
+        </div>
+    )
 
     return (
         <div className={classes.root}>
@@ -101,13 +93,13 @@ const Navbar = ({ children }) => {
                 anchor="left"
             >
                 <div>
-                    <Typography variant="h5" className={classes.sideTitle}>
-                        Notes
+                    <Typography variant="h6" className={classes.sideTitle} color="textSecondary">
+                        PUBLIC
                     </Typography>
                 </div>
 
                 <List>
-                    {menuItems.map((item) => (
+                    {publicItems.map((item) => (
                         <ListItem
                             button
                             key={item.text}
@@ -117,6 +109,8 @@ const Navbar = ({ children }) => {
                         </ListItem>
                     ))}
                 </List>
+
+                {role === 'admin' && mapPrivateItems}
 
             </Drawer>
 

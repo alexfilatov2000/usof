@@ -9,7 +9,9 @@ const slice = createSlice({
     name: 'user',
     initialState: {
         users: [],
-        specUser: null
+        specUser: null,
+        error: null,
+        isPending: false,
     },
     reducers: {
         getUsersSuccess: (state, action) => {
@@ -19,9 +21,25 @@ const slice = createSlice({
         },
         getOneUserSuccess: (state, action) => {
             state.specUser = action.payload;
+            state.isPending = false;
+        },
+        getOneUserPending: (state, action) => {
+            state.isPending = true;
+            state.specUser = null;
         },
         deleteUserSuccess: (state, action) => {
             state.users = state.users.filter(user => user.id !== action.payload);
+        },
+        createUserSuccess: (state, action) => {
+            state.user = action.payload;
+            state.error = null;
+        },
+        createUserFailure: (state, action) => {
+            state.user = null;
+            state.error = action.payload;
+        },
+        editIMGFailure: (state, action) => {
+            state.error = action.payload;
         }
     }
 })
@@ -31,15 +49,10 @@ export default slice.reducer;
 /* ===|===|===|===|===|===|===|===|===|===|===|===|===|===|===|===| */
 /** @Actions**/
 
-const { getUsersSuccess, getOneUserSuccess, deleteUserSuccess } = slice.actions;
+const { getUsersSuccess, getOneUserSuccess, deleteUserSuccess, createUserSuccess, createUserFailure, editIMGFailure, getOneUserPending } = slice.actions;
 export const getUsers = () => async dispatch => {
     try {
         const res = await axios.get(`${config.url}/api/users`);
-        console.log(res.data)
-
-        const arr = res.data.filter(i => i.id !== 4)
-        console.log(arr);
-
         dispatch(getUsersSuccess(res.data));
     } catch (err) {
        console.log(err);
@@ -49,8 +62,13 @@ export const getUsers = () => async dispatch => {
 
 export const getOneUser = (id) => async dispatch => {
     try {
+        dispatch(getOneUserPending())
+
         const res = await axios.get(`${config.url}/api/users/${id}`);
         dispatch(getOneUserSuccess(res.data));
+
+
+
     } catch (err) {
         console.log(err);
         //todo: Error
@@ -66,5 +84,30 @@ export const deleteUser = (id, token) => async dispatch => {
     } catch (err) {
         console.log(err.response);
         //todo: Error
+    }
+}
+
+export const createUser = (user, token, history) => async dispatch => {
+    try {
+        const header = { headers: { Authorization: `Bearer ${token}` }}
+
+        const res = await axios.post(`${config.url}/api/users`, user, header);
+        dispatch(createUserSuccess(res.data));
+        history.push('/users');
+    } catch (err) {
+        dispatch(createUserFailure(err.response.data.error));
+    }
+}
+
+export const editIMG = (img, token, history) => async dispatch => {
+    try {
+        const header = { headers: { Authorization: `Bearer ${token}` }}
+
+        await axios.post(`${config.url}/api/users/avatar`, img, header);
+        // dispatch(createUserSuccess(res.data));
+        history.go(0);
+    } catch (err) {
+        console.log(err.response.data);
+        dispatch(editIMGFailure(err.response.data));
     }
 }

@@ -1,6 +1,7 @@
 import { getManager, Repository } from 'typeorm';
 import { User } from '../entity/user';
 import argon2 from 'argon2';
+import { config } from "../config";
 
 export const findUserById = async (id: number): Promise<User> => {
     const user: Repository<User> = getManager().getRepository(User);
@@ -35,7 +36,7 @@ export const saveNewUser = async (full_name: string, login: string, email: strin
     userToBeSaved.login = login;
     userToBeSaved.email = email;
     userToBeSaved.password = password;
-    userToBeSaved.profile_picture = 'person-icon.png';
+    userToBeSaved.profile_picture = config.defaultPicture;
     return await user.save(userToBeSaved);
 };
 

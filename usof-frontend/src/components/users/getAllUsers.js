@@ -3,13 +3,14 @@ import {Card, CardContent, Grid, IconButton, makeStyles, Typography, Box} from "
 import {useEffect} from "react";
 import {getUsers, deleteUser} from "../../redux/users";
 import {DeleteOutlined} from "@material-ui/icons";
-import {Link} from "react-router-dom";
+import {Link, useHistory} from "react-router-dom";
 import {config} from "../../config";
 import {getRole} from "../../util/getRole";
 
 const useStyles = makeStyles({
     image: {
         width: 70,
+        height: 70,
         border: "1px solid black",
         borderRadius: 100
 
@@ -22,7 +23,7 @@ const useStyles = makeStyles({
     },
     iconPlace: {
         flex: 1
-    }
+    },
 })
 
 const GetAllUsers = () => {
@@ -30,6 +31,7 @@ const GetAllUsers = () => {
     const dispatch = useDispatch();
     const user = useSelector(state => state.users);
     const auth = useSelector(state => state.auth);
+    const history = useHistory();
 
     const role = getRole(auth.token);
 
@@ -55,7 +57,8 @@ const GetAllUsers = () => {
 
                                     <Box className={classes.dataPlace}>
                                         <Typography component="h5" variant="h5" color="textSecondary">
-                                            <Link to={'/users/'+item.id}>{item.full_name}</Link>
+                                            {/*<Link to={'/users/'+item.id}>{item.full_name}</Link>*/}
+                                            <Link onClick={() => history.push(`/users/${item.id}`)}>{item.full_name}</Link>
                                         </Typography>
 
                                         <Typography component="h5" variant="h6" color="textSecondary">
