@@ -30,13 +30,12 @@ export const findLikes = async (id: number): Promise<Like_to_post[]> => {
     return likeRepository.find({ where: { post_id: id } });
 };
 
-export const createPostModel = async (data: Post, user: User, categories: Category[]): Promise<void> => {
+export const createPostModel = async (data: Post, user: User): Promise<void> => {
     const postRepository: Repository<Post> = getManager().getRepository(Post);
 
     const postToBeSaved: Post = new Post();
     postToBeSaved.title = data.title;
     postToBeSaved.content = data.content;
-    postToBeSaved.categories = categories;
     postToBeSaved.user_id = user.id;
     await postRepository.save(postToBeSaved);
 

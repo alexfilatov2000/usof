@@ -38,10 +38,11 @@ export default class CommentController {
     public static async createLike(ctx: Context): Promise<void> {
         try {
             //create like by comment_id
-            await crateLikeService.create(ctx.params.id, ctx.userByToken, ctx.request.body);
+            const data = await crateLikeService.create(ctx.params.id, ctx.userByToken, ctx.request.body);
             //update user rating
             await crateLikeService.updateRating(ctx.params.id, ctx.request.body);
-            ctx.status = 200;
+            ctx.status = data.status;
+            ctx.body = data.val;
         } catch (err) {
             ctx.body = { error: err.message };
             ctx.status = err.statusCode || 500;

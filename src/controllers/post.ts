@@ -93,10 +93,11 @@ export default class PostController {
     public static async createLike(ctx: Context): Promise<void> {
         try {
             //create new like
-            await service.createLikeService.create(ctx.request.body, ctx.params.id, ctx.userByToken);
+            const data = await service.createLikeService.create(ctx.request.body, ctx.params.id, ctx.userByToken);
             //update user rating
             await service.createLikeService.updateRating(ctx.request.body, ctx.params.id);
-            ctx.status = 201;
+            ctx.status = data.status;
+            ctx.body = data.val;
         } catch (err) {
             ctx.body = { error: err.message };
             ctx.status = err.statusCode || 500;

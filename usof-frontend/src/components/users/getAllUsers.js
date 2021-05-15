@@ -1,5 +1,5 @@
 import {useDispatch, useSelector} from "react-redux";
-import {Card, CardContent, Grid, IconButton, makeStyles, Typography, Box} from "@material-ui/core";
+import {Card, CardContent, Grid, IconButton, makeStyles, Typography, Box, Avatar} from "@material-ui/core";
 import {useEffect} from "react";
 import {getUsers, deleteUser} from "../../redux/users";
 import {DeleteOutlined} from "@material-ui/icons";
@@ -7,12 +7,14 @@ import {Link, useHistory} from "react-router-dom";
 import {config} from "../../config";
 import {getRole} from "../../util/getRole";
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
     image: {
-        width: 70,
-        height: 70,
-        border: "1px solid black",
-        borderRadius: 100
+        // width: 70,
+        // height: 70,
+        // border: "1px solid black",
+        // borderRadius: 100
+        width: theme.spacing(9),
+        height: theme.spacing(9),
 
     },
     imgPlace: {
@@ -24,7 +26,7 @@ const useStyles = makeStyles({
     iconPlace: {
         flex: 1
     },
-})
+}));
 
 const GetAllUsers = () => {
     const classes = useStyles();
@@ -52,13 +54,14 @@ const GetAllUsers = () => {
                             <CardContent>
                                 <Box display="flex">
                                     <Box className={classes.imgPlace}>
-                                        <img className={classes.image} src={`${config.url}/${item.profile_picture}`} alt="icon" />
+                                        {/*<img className={classes.image} src={`${config.url}/${item.profile_picture}`} alt="icon" />*/}
+                                        <Avatar className={classes.image} alt="Remy Sharp" src={`${config.url}/${item.profile_picture}`} />
                                     </Box>
 
                                     <Box className={classes.dataPlace}>
                                         <Typography component="h5" variant="h5" color="textSecondary">
                                             {/*<Link to={'/users/'+item.id}>{item.full_name}</Link>*/}
-                                            <Link onClick={() => history.push(`/users/${item.id}`)}>{item.full_name}</Link>
+                                            <Link style={{textDecoration: 'none'}} to={'/users/'+item.id}>{item.full_name}</Link>
                                         </Typography>
 
                                         <Typography component="h5" variant="h6" color="textSecondary">

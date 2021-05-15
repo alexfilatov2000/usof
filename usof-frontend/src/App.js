@@ -10,10 +10,12 @@ import GetAllUsers from "./components/users/getAllUsers";
 import GetSpecifiedUser from "./components/users/getSpecifiedUser";
 import {useSelector} from "react-redux";
 import PublicRoute from "./components/PublicRoute";
-import PrivateRoute from "./components/PrivateRoute";
+import AdminRoute from "./components/AdminRoute";
+import UserRoute from "./components/UserRoute";
 import CreateUser from "./components/users/createUser";
 import GetAllPosts from "./components/posts/getAllPosts";
 import GetSpecifiedPost from "./components/posts/getSpecifiedPost";
+import CreatePost from "./components/posts/createPost";
 
 
 function App() {
@@ -39,7 +41,9 @@ function App() {
                           <PublicRoute component={NewPassword} exact path="/password-reset/:token" token={auth.token}/>
                           <PublicRoute component={VerifyEmail} exact path="/verify-email/:token" token={auth.token}/>
 
-                          <PrivateRoute component={CreateUser} exact path="/userCreate" token={auth.token}/>
+                          <UserRoute component={CreatePost} exact path="/postAsk" token={auth.token}/>
+
+                          <AdminRoute component={CreateUser} exact path="/userCreate" token={auth.token}/>
 
                       </Switch>
                   </div>

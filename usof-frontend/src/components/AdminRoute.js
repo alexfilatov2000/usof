@@ -1,7 +1,7 @@
 import {Route, Redirect} from "react-router-dom";
 import {getRole} from "../util/getRole";
 
-const UserRoute = ({ component: Component, token, ...rest }) => {
+const AdminRoute = ({ component: Component, token, ...rest }) => {
     const role = getRole(token);
 
     if (role === 'admin') {
@@ -11,4 +11,4 @@ const UserRoute = ({ component: Component, token, ...rest }) => {
     }
 }
 
-export default UserRoute;
+export default AdminRoute;

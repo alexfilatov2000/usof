@@ -1,19 +1,20 @@
 import {useDispatch, useSelector} from "react-redux";
-import {Box, Button, makeStyles, Typography} from "@material-ui/core";
+import {Avatar, Box, Button, makeStyles, Typography} from "@material-ui/core";
 import {useEffect, useState} from "react";
 import {getOneUser, editIMG} from "../../redux/users";
 import {useHistory, useParams} from "react-router-dom";
 import {config} from "../../config";
 import {compareIds} from "../../util/compareIds";
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) =>({
     image: {
-        border: "1px solid black",
+        // border: "1px solid black",
         padding: 10,
         flex: "1",
+        marginRight: 40
     },
     data: {
-        border: "1px solid black",
+        //border: "1px solid black",
         padding: 10,
         flex: "4"
     },
@@ -26,8 +27,9 @@ const useStyles = makeStyles({
         color: "red",
     },
     imgSize: {
-        width: 300,
-        height: 300
+        width: theme.spacing(40),
+        height: theme.spacing(40),
+        border: "1px solid black",
     },
     error: {
         color: "red",
@@ -37,7 +39,7 @@ const useStyles = makeStyles({
         padding: 5,
         marginBottom: 5
     }
-})
+}))
 
 const GetSpecifiedUser = () => {
     const [myFile, setMyFile] = useState(null);
@@ -58,7 +60,10 @@ const GetSpecifiedUser = () => {
 
         const data = new FormData();
         data.append('upload', myFile);
+        console.log(data)
+
         dispatch(editIMG(data, auth.token, history))
+
     }
 
     useEffect(() => {
@@ -89,7 +94,8 @@ const GetSpecifiedUser = () => {
             {user.specUser &&
             <Box display="flex" flexDirection="row" p={1} m={1}>
                 <Box className={classes.image}  p={1}>
-                    <img src={`${config.url}/${user.specUser.profile_picture}`} alt="icon" className={classes.imgSize}/>
+                    {/*<img src={`${config.url}/${user.specUser.profile_picture}`} alt="icon" className={classes.imgSize}/>*/}
+                    <Avatar className={classes.imgSize} variant="rounded" alt="Remy Sharp" src={`${config.url}/${user.specUser.profile_picture}`} />
                     {user.error && <div className={classes.error}>{user.error}</div>}
                     {edit &&
                     <form onSubmit={editPic}>

@@ -1,14 +1,12 @@
 import {useDispatch, useSelector} from "react-redux";
-import {Card, CardContent, Grid, IconButton, makeStyles, Typography, Box} from "@material-ui/core";
+import {Card, CardContent, Grid, makeStyles, Typography, Box, Avatar, Button} from "@material-ui/core";
 import {useEffect} from "react";
-import {getAllPosts} from "../../redux/posts";
-import {DeleteOutlined} from "@material-ui/icons";
-import {Link} from "react-router-dom";
+import posts, {getAllPosts} from "../../redux/posts";
+import {Link, useHistory} from "react-router-dom";
 import {config} from "../../config";
-import {getRole} from "../../util/getRole";
-import {getOneUser} from "../../redux/users";
+import axios from "axios";
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
     votes: {
         textAlign: "center",
         margin: '5px 25px 5px 10px'
@@ -31,33 +29,51 @@ const useStyles = makeStyles({
         overflow: "hidden",
     },
     image: {
-        width: 70,
-        height: 70,
-        border: "1px solid black",
-        borderRadius: 15
+        width: theme.spacing(6),
+        height: theme.spacing(6),
     },
-})
+    questions: {
+        justifyContent: "space-between",
+        margin: 20
+    }
+}))
 
 const GetAllPosts = () => {
     const classes = useStyles();
     const dispatch = useDispatch();
+    const history = useHistory();
     const post = useSelector(state => state.posts);
     const user = useSelector(state => state.users)
     const auth = useSelector(state => state.auth);
 
-    const role = getRole(auth.token);
-
     useEffect(() => {
         dispatch(getAllPosts())
-        //dispatch(getOneUser(post.))
     }, [dispatch])
 
-    // const func = (id) => {
-    //     dispatch(deleteUser(id, auth.token))
+    // const getAnswers = async (id) => {
+    //     const comments = await axios.get(`${config.url}/api/posts/${id}/comments`);
+    //     return comments.data.length;
     // }
+
+
 
     return (
         <div>
+            <Box display="flex" className={classes.questions}>
+                <Typography variant="h4" >
+                    All Questions
+                </Typography>
+
+                <Button
+                    type="submit"
+                    color="secondary"
+                    variant="contained"
+                    onClick={() => history.push('postAsk')}
+                >
+                    ask Question
+                </Button>
+
+            </Box>
             <Grid container spacing={1}>
                 {post.posts.map(item => (
                     <Grid item xs={12} key={item.id}>
@@ -68,7 +84,7 @@ const GetAllPosts = () => {
                                     <Box >
                                         <div className={classes.votes}>
                                             <Typography variant="h6" color="textSecondary">
-                                                {0}
+                                                {item.likesCnt}
                                             </Typography>
 
                                             <Typography variant="body1" color="textSecondary">
@@ -78,7 +94,7 @@ const GetAllPosts = () => {
 
                                         <div className={classes.votes}>
                                             <Typography variant="h6" color="textSecondary">
-                                                {0}
+                                                {item.commentsCnt}
                                             </Typography>
 
                                             <Typography variant="body1" color="textSecondary">
@@ -108,21 +124,13 @@ const GetAllPosts = () => {
                                         </Typography>
 
                                         <Box>
-                                            <img className={classes.image} src={`${config.url}/${item.user.profile_picture}`} alt="icon" />
+                                            <Avatar className={classes.image} alt="Remy Sharp" src={`${config.url}/${item.user.profile_picture}`} />
                                         </Box>
 
                                         <Box>
                                             <Link to={'/users/'+item.user_id}>{item.user.full_name}</Link>
                                         </Box>
                                     </Box>
-
-                                    {/*{role === 'admin' &&*/}
-                                    {/*<Box>*/}
-                                    {/*    <IconButton className={classes.iconPlace} onClick={() => func(item.id)}>*/}
-                                    {/*        <DeleteOutlined />*/}
-                                    {/*    </IconButton>*/}
-                                    {/*</Box>*/}
-                                    {/*}*/}
 
                                 </Box>
                             </CardContent>

@@ -28,14 +28,30 @@ export const getLikesService = async (id: number): Promise<Like_to_comment[]> =>
 };
 
 export const crateLikeService = {
-    create: async (id: number, user: User, bodyData: Like_to_comment): Promise<void> => {
+    create: async (id: number, user: User, bodyData: Like_to_comment): Promise<any> => {
         const { error } = createLikeSchema.validate(bodyData);
         if (error) throw new CustomError(error.message, 400);
 
         const comment = await findOneCommentModel(id);
         if (!comment) throw new CustomError('No comment found', 204);
 
-        await createLikeModel(id, user, bodyData);
+        const like = await findOneLikeUnderComment(id, user.id);
+
+        if (!like) {
+            await createLikeModel(id, user, bodyData);
+            return {status: 201, val: 1};
+        } else {
+            if (like.type === bodyData.type){
+                await deleteLikeUnderComment(like.id);
+                return {status: 200, val: 1};
+            } else {
+                await deleteLikeUnderComment(like.id);
+                await createLikeModel(id, user, bodyData);
+                return {status: 201, val: 2};
+            }
+        }
+
+
     },
     updateRating: async (comment_id: number, bodyData: Like_to_comment): Promise<void> => {
         let cnt = -1;

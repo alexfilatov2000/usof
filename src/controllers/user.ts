@@ -51,7 +51,7 @@ export default class UserController {
         try {
             if (!ctx.file) throw new Error('Only .png, .jpg and .jpeg format allowed!');
             await addImageService(ctx.file.filename, ctx.userByToken);
-            ctx.status = 200;
+            ctx.body = ctx.file.filename;
         } catch (e) {
             ctx.status = 400;
             ctx.body = e.message;

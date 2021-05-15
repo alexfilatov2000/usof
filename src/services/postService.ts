@@ -46,8 +46,8 @@ export const createPostService = async (bodyData: Post, user: User): Promise<voi
     const { error } = createPostSchema.validate(bodyData);
     if (error) throw new CustomError(error.message, 400);
     //@ts-ignore
-    const commentsArr = await model.findByIdsModel(bodyData.categories);
-    await model.createPostModel(bodyData, user, commentsArr);
+    // const commentsArr = await model.findByIdsModel(bodyData.categories);
+    await model.createPostModel(bodyData, user);
 };
 
 export const createCommentService = async (bodyData: Comment, post_id: number, user: User): Promise<void> => {
@@ -58,11 +58,25 @@ export const createCommentService = async (bodyData: Comment, post_id: number, u
 };
 
 export const createLikeService = {
-    create: async (bodyData: Like_to_post, post_id: number, user: User): Promise<void> => {
+    create: async (bodyData: Like_to_post, post_id: number, user: User): Promise<any> => {
         const { error } = createLikeSchema.validate(bodyData);
         if (error) throw new CustomError(error.message, 400);
+        //await model.createLikeModel(bodyData, post_id, user);
+        const like = await model.findOneLikeUnderPost(post_id, user.id);
+        if (!like) {
+            await model.createLikeModel(bodyData, post_id, user);
+            return {status: 201, val: 1};
+        } else {
+            if (like.type === bodyData.type){
+                await model.deleteLikeUnderPost(like.id);
+                return {status: 200, val: 1};
+            } else {
+                await model.deleteLikeUnderPost(like.id);
+                await model.createLikeModel(bodyData, post_id, user);
+                return {status: 201, val: 2};
+            }
+        }
 
-        await model.createLikeModel(bodyData, post_id, user);
     },
     updateRating: async (bodyData: Like_to_post, post_id: number): Promise<void> => {
         const post = await model.findOnePost(post_id);
@@ -101,9 +115,9 @@ export const updatePostService = async (bodyData: Post, post_id: number, user: U
 export const deletePostService = async (user: User, id: number): Promise<void> => {
     const post = await model.findOnePost(id);
     if (!post) throw new CustomError('No post found', 204);
-    if (post.user_id !== user.id) throw new CustomError('access denied', 400);
 
-    await model.deletePostModel(id);
+    if (post.user_id === user.id || user.role === 'admin') await model.deletePostModel(id);
+    else throw new CustomError('access denied', 400);
 };
 
 export const deleteLikeService = {

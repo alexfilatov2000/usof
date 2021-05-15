@@ -4,6 +4,7 @@ import { auth } from '../middleware/userAuth';
 
 const CommentRouter = new Router();
 
+//id: post_id
 CommentRouter.get('/api/comments/:id', CommentController.getComment);
 CommentRouter.get('/api/comments/:id/like', CommentController.getAllLikesByCommentId);
 
