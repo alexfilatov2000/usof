@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToMany } from 'typeorm';
+import {Entity, PrimaryGeneratedColumn, Column, ManyToMany, Index} from 'typeorm';
 // import {PostToCategory} from "./postToCategory";
 import { Post } from './post';
 
@@ -7,6 +7,7 @@ export class Category {
     @PrimaryGeneratedColumn()
     id: number;
 
+    @Index({ unique: true })
     @Column()
     title: string;
 

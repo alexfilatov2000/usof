@@ -20,9 +20,10 @@ export const findComments = async (id: number): Promise<Comment[]> => {
     return commentRepository.find({ where: { post_id: id } });
 };
 
-export const findCategories = async (id: number): Promise<Category[]> => {
-    const categoryRepository: Repository<Category> = getManager().getRepository(Category);
-    return categoryRepository.find({ where: { post_id: id } });
+export const findCategories = async (id: number): Promise<Post> => {
+    const postRepository: Repository<Post> = getManager().getRepository(Post);
+    return postRepository.findOne(id, { relations: ['categories'] });
+
 };
 
 export const findLikes = async (id: number): Promise<Like_to_post[]> => {
@@ -30,12 +31,13 @@ export const findLikes = async (id: number): Promise<Like_to_post[]> => {
     return likeRepository.find({ where: { post_id: id } });
 };
 
-export const createPostModel = async (data: Post, user: User): Promise<void> => {
+export const createPostModel = async (data: Post, user: User, categories: Category[]): Promise<void> => {
     const postRepository: Repository<Post> = getManager().getRepository(Post);
 
     const postToBeSaved: Post = new Post();
     postToBeSaved.title = data.title;
     postToBeSaved.content = data.content;
+    postToBeSaved.categories = categories;
     postToBeSaved.user_id = user.id;
     await postRepository.save(postToBeSaved);
 
@@ -100,4 +102,14 @@ export const findOneLikeUnderPost = async (post_id: number, user_id: number): Pr
 export const findByIdsModel = async (Ids: number[]): Promise<Category[]> => {
     const category: Repository<Category> = getManager().getRepository(Category);
     return category.findByIds(Ids);
+};
+
+export const findByTitlesModel = async (titles: string[]): Promise<Category[]> => {
+    const category: Repository<Category> = getManager().getRepository(Category);
+    let arr = [];
+    for (let val of titles) {
+        arr.push(await category.findOne({ where: {title: val} }));
+    }
+
+    return arr;
 };

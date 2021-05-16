@@ -4,6 +4,7 @@ import axios from "axios";
 import {convertDate} from "../util/convertDate";
 import {likesCnt} from "../util/getLikesToPostCnt";
 import {parseJwt} from "../util/parseToken";
+import {errType} from "../util/getErrDataType";
 
 /* ===|===|===|===|===|===|===|===|===|===|===|===|===|===|===|===| */
 /** @Reducers**/
@@ -19,7 +20,7 @@ const slice = createSlice({
         minus: false,
         error: null,
         commentAdded: false,
-        postErr: {msg: null, title: false, content: false}
+        postErr: {msg: null, title: false, content: false, categories: false}
     },
     reducers: {
         getAllPostsSuccess: (state, action) => {
@@ -135,6 +136,7 @@ export const getOnePost = (id, token) => async dispatch => {
         token = parseJwt(token);
         const res = await axios.get(`${config.url}/api/posts/${id}`);
         const likes = await axios.get(`${config.url}/api/posts/${id}/like`);
+        const categories = await axios.get(`${config.url}/api/posts/${id}/categories`);
         const comments = await axios.get(`${config.url}/api/posts/${id}/comments`);
         if (comments.status !== 204) convertDate(comments.data);
 
@@ -152,6 +154,8 @@ export const getOnePost = (id, token) => async dispatch => {
         }
 
         res.data.likesVal = likesCnt(likes.data);
+        if (categories.data.length > 0) res.data.categories = categories.data
+
         convertDate(res.data);
 
         let plusFlag = false;
@@ -304,18 +308,20 @@ export const createPost = (data, token, history, setOpen) => async dispatch => {
 
         history.push('/posts');
     } catch (err) {
-        console.log(err.response.data.error)
         setOpen(true);
-        let type = err.response.data.error.match(/"(.*?)"/g);
-        type = type[0].substring(1);
-        type = type.substring(0, type.length - 1);
+        let type = errType(err.response.data.error);
 
-        const types = {title: false, content: false};
+        const types = {title: false, content: false, categories: false};
         if (type === 'title') types.title = true;
         if (type === 'content') types.content = true;
+        if (type === 'categories') types.categories = true;
 
-        console.log(type);
-        const error = {msg: err.response.data.error, title: types.title, content: types.content}
+        const error = {
+            msg: err.response.data.error,
+            title: types.title,
+            content: types.content,
+            categories: types.categories,
+        }
 
         dispatch(createPostFailure(error))
     }

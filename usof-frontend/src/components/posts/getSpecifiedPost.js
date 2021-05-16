@@ -35,7 +35,10 @@ const useStyles = makeStyles((theme) => ({
         borderBottom: '100px solid red',
     },
     content: {
-        margin: 15
+        margin: 15,
+        borderBottom: '1px solid #D3D3D3',
+        paddingBottom: 30,
+
     },
     switch: {
         margin: '10px 20px 0 0'
@@ -59,7 +62,7 @@ const useStyles = makeStyles((theme) => ({
         // border: "1px solid black"
     },
     userPlace: {
-        backgroundColor: "#dde6ec",
+        backgroundColor: "#e1ecf4",
         width: "min-content",
         padding: 10,
         borderRadius: 10
@@ -68,6 +71,24 @@ const useStyles = makeStyles((theme) => ({
         borderBottom: '1px solid #D3D3D3',
         paddingBottom: 30,
         marginBottom: 10
+    },
+    categoriesArr: {
+        marginRight: 10,
+        fontSize: 14,
+        height: 25,
+        textTransform: "lowercase",
+        color: "#39739d",
+        backgroundColor: "#e1ecf4",
+        '&:hover': {
+            backgroundColor: "#d1e5f1",
+            color: "#2c5777",
+        },
+    },
+    postContent: {
+        paddingBottom: 25
+    },
+    lastSection: {
+        width: '100%',
     }
 }))
 
@@ -117,7 +138,7 @@ const GetSpecifiedPost = () => {
 
     return (
         <div className={classes.container}>
-            {post.specPost &&
+            {post.specPost && getPostUser().id &&
                 <div>
                     <Box display="flex" style={{justifyContent: "space-between"}}>
                         <Typography variant="h3" >
@@ -159,33 +180,43 @@ const GetSpecifiedPost = () => {
                             <Button onClick={deleteLikePost} variant={minusStyle.variant} color={minusStyle.color}>&#8744;</Button>
                         </Box>
 
-                        <Typography variant="h6" >
-                            {post.specPost.content}
-                        </Typography>
-                    </Box>
+                        <Box className={classes.lastSection}>
+                            <Typography variant="h6" className={classes.postContent}>
+                                {post.specPost.content}
+                            </Typography>
 
-
-                    <Box display="flex" className={classes.endPost}>
-                        <Box className={classes.categoriesPlace}>categories</Box>
-
-                        <Box display="flex" className={classes.imgPlace}>
-
-                            <Box display="flex" className={classes.userPlace}>
-                                <Avatar className={classes.image} alt="Remy Sharp" src={`${config.url}/${getPostUser().profile_picture}`} />
-                                <div>
-                                    <Box>
-                                        <Link style={{textDecoration: 'none'}} to={'/users/'+getPostUser().id}>{getPostUser().full_name}</Link>
-                                    </Box>
-                                    <Box>
-                                        <Typography variant="body1" color="textSecondary">
-                                            rating:{getPostUser().rating}
-                                        </Typography>
-                                    </Box>
-                                </div>
+                            <Box className={classes.categoriesPlace} display="flex">
+                                {post.specPost.categories.map(c => (
+                                    <Button
+                                        className={classes.categoriesArr}
+                                        type="submit"
+                                        variant="contained"
+                                        key={c.id}
+                                    >
+                                        {c.title}
+                                    </Button>
+                                ))}
                             </Box>
 
+                            <Box display="flex" className={classes.imgPlace}>
+
+                                <Box display="flex" className={classes.userPlace}>
+                                    <Avatar className={classes.image} alt="Remy Sharp" src={`${config.url}/${getPostUser().profile_picture}`} />
+                                    <div>
+                                        <Box>
+                                            <Link style={{textDecoration: 'none'}} to={'/users/'+getPostUser().id}>{getPostUser().full_name}</Link>
+                                        </Box>
+                                        <Box>
+                                            <Typography variant="body1" color="textSecondary">
+                                                rating:{getPostUser().rating}
+                                            </Typography>
+                                        </Box>
+                                    </div>
+                                </Box>
+                            </Box>
                         </Box>
                     </Box>
+
 
                 </div>
             }

@@ -43,6 +43,7 @@ export default class PostController {
     public static async getAllCategories(ctx: Context): Promise<void> {
         try {
             //find all categories by post_id
+            console.log(111);
             ctx.body = await service.getCategoriesService(ctx.params.id);
         } catch (err) {
             ctx.body = { error: err.message };

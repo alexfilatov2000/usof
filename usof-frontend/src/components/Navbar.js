@@ -50,6 +50,10 @@ const Navbar = ({ children }) => {
         {
             text: 'Create User',
             path: '/userCreate'
+        },
+        {
+            text: 'Create Category',
+            path: '/categoryCreate'
         }
     ];
 

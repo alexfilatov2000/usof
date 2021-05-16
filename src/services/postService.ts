@@ -29,10 +29,9 @@ export const getCommentsService = async (id: number): Promise<Comment[]> => {
 };
 
 export const getCategoriesService = async (id: number): Promise<Category[]> => {
-    const categories = await model.findCategories(id);
+    const post = await model.findCategories(id);
     // if no found categories (categories = [])
-    if (!categories.length) throw new CustomError('No category found', 204);
-    return categories;
+    return post.categories;
 };
 
 export const getLikesService = async (id: number): Promise<Like_to_post[]> => {
@@ -46,8 +45,8 @@ export const createPostService = async (bodyData: Post, user: User): Promise<voi
     const { error } = createPostSchema.validate(bodyData);
     if (error) throw new CustomError(error.message, 400);
     //@ts-ignore
-    // const commentsArr = await model.findByIdsModel(bodyData.categories);
-    await model.createPostModel(bodyData, user);
+    const categoriesArr = await model.findByTitlesModel(bodyData.categories);
+    await model.createPostModel(bodyData, user, categoriesArr);
 };
 
 export const createCommentService = async (bodyData: Comment, post_id: number, user: User): Promise<void> => {

@@ -24,9 +24,11 @@ const useStyles = makeStyles((theme) => ({
         flex: 1
     },
     content: {
-        lineHeight: "1.5em",
-        height: "3em",
-        overflow: "hidden",
+        display: "-webkit-box",
+        boxOrient: "vertical",
+        lineClamp: 2,
+        wordBreak: "break-all",
+        overflow: "hidden"
     },
     image: {
         width: theme.spacing(6),

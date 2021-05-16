@@ -16,6 +16,8 @@ import CreateUser from "./components/users/createUser";
 import GetAllPosts from "./components/posts/getAllPosts";
 import GetSpecifiedPost from "./components/posts/getSpecifiedPost";
 import CreatePost from "./components/posts/createPost";
+import GetAllCategories from "./components/categories/getAllCategories";
+import CreateCategory from "./components/categories/createCategory";
 
 
 function App() {
@@ -35,6 +37,8 @@ function App() {
                           <Route exact path="/posts" component={GetAllPosts}/>
                           <Route exact path="/posts/:id" component={GetSpecifiedPost}/>
 
+                          <Route exact path="/categories" component={GetAllCategories}/>
+
                           <PublicRoute component={Register} exact path="/register" token={auth.token}/>
                           <PublicRoute component={Login} exact path="/login" token={auth.token}/>
                           <PublicRoute component={PasswordReset} exact path="/password-reset" token={auth.token}/>
@@ -44,6 +48,7 @@ function App() {
                           <UserRoute component={CreatePost} exact path="/postAsk" token={auth.token}/>
 
                           <AdminRoute component={CreateUser} exact path="/userCreate" token={auth.token}/>
+                          <AdminRoute component={CreateCategory} exact path="/categoryCreate" token={auth.token}/>
 
                       </Switch>
                   </div>
