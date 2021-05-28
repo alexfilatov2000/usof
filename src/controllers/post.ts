@@ -7,7 +7,7 @@ export default class PostController {
     public static async getAllPosts(ctx: Context): Promise<void> {
         try {
             //find all posts
-            ctx.body = await service.getAllPostsService();
+            ctx.body = await service.getAllPostsService(ctx.query);
         } catch (err) {
             ctx.body = { error: err.message };
             ctx.status = 400;
@@ -81,7 +81,7 @@ export default class PostController {
     public static async createComment(ctx: Context): Promise<void> {
         try {
             //create new comment
-            await service.createCommentService(ctx.request.body, ctx.params.id, ctx.userByToken);
+            ctx.body = await service.createCommentService(ctx.request.body, ctx.params.id, ctx.userByToken);
             ctx.status = 201;
         } catch (err) {
             ctx.body = { error: err.message };

@@ -9,13 +9,8 @@ import {getRole} from "../../util/getRole";
 
 const useStyles = makeStyles((theme) => ({
     image: {
-        // width: 70,
-        // height: 70,
-        // border: "1px solid black",
-        // borderRadius: 100
         width: theme.spacing(9),
         height: theme.spacing(9),
-
     },
     imgPlace: {
         flex: 2,

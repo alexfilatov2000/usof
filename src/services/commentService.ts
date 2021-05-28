@@ -78,9 +78,11 @@ export const updateCommentService = async (id: number, user: User, bodyData: Com
 export const deleteCommentService = async (id: number, user: User): Promise<void> => {
     const comment = await findOneCommentModel(id);
     if (!comment) throw new CustomError('No found comment', 204);
-    if (comment.user_id !== user.id) throw new CustomError('access denied', 401);
-
-    await deleteCommentModel(id);
+    if (comment.user_id === user.id || user.role === 'admin') {
+        await deleteCommentModel(id);
+    } else {
+        throw new CustomError('access denied', 401);
+    }
 };
 
 export const deleteLikeUnderCommentService = {

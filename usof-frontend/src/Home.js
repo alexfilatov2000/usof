@@ -24,19 +24,7 @@ const Home = () => {
 
     return (
         <div>
-            <h1>Home</h1>
-            <form onSubmit={handleSubmit}>
-                <div>
-                    <input
-                        type="file"
-                        id="upload"
-                        name="upload"
-                        onChange={(e) => setMyFile(e.target.files[0])}
-                        required
-                    />
-                </div>
-                <button>Sent</button>
-            </form>
+            HOME
         </div>
     );
 }

@@ -5,9 +5,25 @@ import { Category } from '../entity/category';
 import { Like_to_post } from '../entity/like_to_post';
 import { User } from '../entity/user';
 
-export const findAllPosts = async (): Promise<Post[]> => {
+export const findAllPosts = async (query: any): Promise<any> => {
     const postRepository: Repository<Post> = getManager().getRepository(Post);
-    return postRepository.find({ relations: ['categories'] });
+
+    const take = query.take || 10
+    const skip = query.skip || 0
+
+    const [result, total] = await postRepository.findAndCount(
+        {
+            order: { publish_date: "DESC" },
+            take: take,
+            skip: skip,
+            relations: ['categories']
+        }
+    );
+
+    return {
+        data: result,
+        count: total
+    }
 };
 
 export const findOnePost = async (id: number): Promise<Post> => {
@@ -44,7 +60,7 @@ export const createPostModel = async (data: Post, user: User, categories: Catego
     console.dir(postToBeSaved);
 };
 
-export const createCommentModel = async (data: Comment, post_id: number, user: User): Promise<void> => {
+export const createCommentModel = async (data: Comment, post_id: number, user: User): Promise<Comment> => {
     const commentRepository: Repository<Comment> = getManager().getRepository(Comment);
 
     const commentToBeSaved: Comment = new Comment();
@@ -52,7 +68,7 @@ export const createCommentModel = async (data: Comment, post_id: number, user: U
     commentToBeSaved.post_id = post_id;
     commentToBeSaved.user_id = user.id;
 
-    await commentRepository.save(commentToBeSaved);
+    return commentRepository.save(commentToBeSaved);
 };
 
 export const createLikeModel = async (data: Like_to_post, post_id: number, user: User): Promise<void> => {

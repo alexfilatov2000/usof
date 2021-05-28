@@ -13,6 +13,8 @@ const slice = createSlice({
     name: 'categories',
     initialState: {
         categories: [],
+        specCategory: null,
+        postsByCategory: [],
         error: { msg: null, title: false, description: false },
         success: false,
         openSuccess: false,
@@ -21,7 +23,9 @@ const slice = createSlice({
     reducers: {
         getAllCategoriesSuccess: (state, action) => {
             state.categories = action.payload;
-            state.error = { msg: null, title: false, description: false }
+            state.error = { msg: null, title: false, description: false };
+            state.specCategory = null;
+            state.postsByCategory = [];
         },
         createCategoryFailure: (state, action) => {
             state.error = action.payload;
@@ -38,6 +42,12 @@ const slice = createSlice({
         onCloseError: (state, action) => {
             state.openError = false;
         },
+        getSpecCategorySuccess: (state, action) => {
+            state.specCategory = action.payload;
+        },
+        getPostsByCategorySuccess: (state, action) => {
+            state.postsByCategory = action.payload;
+        },
     }
 })
 export default slice.reducer;
@@ -45,11 +55,28 @@ export default slice.reducer;
 /* ===|===|===|===|===|===|===|===|===|===|===|===|===|===|===|===| */
 /** @Actions**/
 
-const {getAllCategoriesSuccess, createCategoryFailure, createCategorySuccess, onCloseSuccess , onCloseError} = slice.actions;
+const {
+    getAllCategoriesSuccess,
+    createCategoryFailure,
+    createCategorySuccess,
+    onCloseSuccess,
+    getSpecCategorySuccess,
+    getPostsByCategorySuccess,
+    onCloseError } = slice.actions;
 
 export const getAllCategories = () => async dispatch => {
     try {
         const categories = await axios.get(`${config.url}/api/categories`);
+
+        let arr = [];
+        for (let val of categories.data) {
+            const postsInCategories = await axios.get(`${config.url}/api/categories/${val.id}/posts`);
+            val.cntOfPosts = postsInCategories.data.length;
+        }
+
+        console.log(categories.data);
+
+
         dispatch(getAllCategoriesSuccess(categories.data));
 
     } catch (err) {
@@ -88,4 +115,43 @@ export const closeSuccess = () => async dispatch => {
 
 export const closeError = () => async dispatch => {
     dispatch(onCloseError());
+}
+
+export const getSpecCategory = (id) => async dispatch => {
+    try {
+        const category = await axios.get(`${config.url}/api/categories/${id}`);
+        dispatch(getSpecCategorySuccess(category.data));
+    } catch (err) {
+        console.log(err.response)
+    }
+
+}
+
+export const getPostsByCategory = (id) => async dispatch => {
+    try {
+        const posts = await axios.get(`${config.url}/api/categories/${id}/posts`);
+        const users = await axios.get(`${config.url}/api/users/`);
+
+        convertDate(posts.data);
+        //add users
+        posts.data.map(async post => {
+            post.user = users.data.find(u => u.id === post.user_id)
+        })
+
+        //add likes
+        for (let val of posts.data) {
+            let likes = await axios.get(`${config.url}/api/posts/${val.id}/like`);
+            val.likesCnt = likesCnt(likes.data);
+        }
+
+        //add answers
+        for (let val of posts.data) {
+            let comments = await axios.get(`${config.url}/api/posts/${val.id}/comments`);
+            val.commentsCnt = comments.data.length;
+        }
+        dispatch(getPostsByCategorySuccess(posts.data));
+    } catch (err) {
+        console.log(err.response)
+    }
+
 }

@@ -52,20 +52,20 @@ const useStyles = makeStyles((theme) => ({
         marginRight: 10,
         // border: "1px solid black"
     },
-    imgPlace: {
-        flex: 1,
+    user: {
         // border: "1px solid black",
+        // justifyContent: "flex-end",
         justifyContent: "flex-end",
+        paddingLeft: 25,
+    },
+    userIn: {
+        padding: '10px 15px',
+        border: '1px solid lightgray',
+        backgroundColor: "#e1ecf4",
+        borderRadius: 15
     },
     categoriesPlace: {
         flex: 1,
-        // border: "1px solid black"
-    },
-    userPlace: {
-        backgroundColor: "#e1ecf4",
-        width: "min-content",
-        padding: 10,
-        borderRadius: 10
     },
     endPost: {
         borderBottom: '1px solid #D3D3D3',
@@ -192,38 +192,34 @@ const GetSpecifiedPost = () => {
                                         type="submit"
                                         variant="contained"
                                         key={c.id}
+                                        onClick={() => history.replace(`/categories/${c.id}`)}
                                     >
                                         {c.title}
                                     </Button>
                                 ))}
                             </Box>
 
-                            <Box display="flex" className={classes.imgPlace}>
+                            <Box display="flex" className={classes.user}>
+                                <div className={classes.userIn}>
+                                    <Box display="flex">
+                                        <Avatar className={classes.image} alt="Remy Sharp" src={`${config.url}/${getPostUser().profile_picture}`} />
 
-                                <Box display="flex" className={classes.userPlace}>
-                                    <Avatar className={classes.image} alt="Remy Sharp" src={`${config.url}/${getPostUser().profile_picture}`} />
-                                    <div>
                                         <Box>
                                             <Link style={{textDecoration: 'none'}} to={'/users/'+getPostUser().id}>{getPostUser().full_name}</Link>
-                                        </Box>
-                                        <Box>
                                             <Typography variant="body1" color="textSecondary">
                                                 rating:{getPostUser().rating}
                                             </Typography>
                                         </Box>
-                                    </div>
-                                </Box>
+                                    </Box>
+                                </div>
                             </Box>
                         </Box>
                     </Box>
 
-
+                    <GetComments post_id={id}/>
+                    {post.specPost && <WriteComment/>}
                 </div>
             }
-
-            <GetComments post_id={id}/>
-
-            {post.specPost && <WriteComment/>}
         </div>
     );
 }

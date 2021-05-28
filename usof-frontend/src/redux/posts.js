@@ -20,7 +20,9 @@ const slice = createSlice({
         minus: false,
         error: null,
         commentAdded: false,
-        postErr: {msg: null, title: false, content: false, categories: false}
+        postErr: { msg: null, title: false, content: false, categories: false },
+        openCommentSuccess: false,
+        openCommentError: false,
     },
     reducers: {
         getAllPostsSuccess: (state, action) => {
@@ -64,9 +66,12 @@ const slice = createSlice({
         },
         createCommentFailure: (state, action) => {
             state.error = action.payload;
+            state.openCommentError = true;
         },
         createCommentSuccess: (state, action) => {
             state.commentAdded = true;
+            state.comments.push(action.payload);
+            state.openCommentSuccess = true;
         },
         deletePostSuccess: (state, action) => {
             state.specPost = null;
@@ -76,6 +81,15 @@ const slice = createSlice({
         },
         createPostSuccess: (state, action) => {
             state.postErr = {msg: null, title: false, content: false}
+        },
+        onCloseCommentError: (state, action) => {
+            state.openCommentError = false;
+        },
+        onCloseCommentSuccess: (state, action) => {
+            state.openCommentSuccess = false;
+        },
+        deleteCommentByIdSuccess: (state, action) => {
+            state.comments = state.comments.filter(comments => comments.id !== action.payload);
         },
     }
 
@@ -98,33 +112,37 @@ const {
     deletePostSuccess,
     createPostFailure,
     createPostSuccess,
+    onCloseCommentError,
+    onCloseCommentSuccess,
+    deleteCommentByIdSuccess,
     deleteLikeToCommentSuccess } = slice.actions;
 
-export const getAllPosts = () => async dispatch => {
+export const getAllPosts = (query) => async dispatch => {
     try {
         const posts = await axios.get(`${config.url}/api/posts`);
         const users = await axios.get(`${config.url}/api/users/`);
 
-        convertDate(posts.data);
+        convertDate(posts.data.data);
 
         //add users
-        posts.data.map(async post => {
+        posts.data.data.map(async post => {
             post.user = users.data.find(u => u.id === post.user_id)
         })
 
         //add likes
-        for (let val of posts.data) {
+        for (let val of posts.data.data) {
             let likes = await axios.get(`${config.url}/api/posts/${val.id}/like`);
             val.likesCnt = likesCnt(likes.data);
         }
 
         //add answers
-        for (let val of posts.data) {
+        for (let val of posts.data.data) {
             let comments = await axios.get(`${config.url}/api/posts/${val.id}/comments`);
             val.commentsCnt = comments.data.length;
         }
 
-        dispatch(getAllPostsSuccess(posts.data));
+        console.log(posts.data.data[0].categories);
+        dispatch(getAllPostsSuccess(posts.data.data));
 
     } catch (err) {
         // dispatch(loginFailure(err.response.data.error))
@@ -138,7 +156,7 @@ export const getOnePost = (id, token) => async dispatch => {
         const likes = await axios.get(`${config.url}/api/posts/${id}/like`);
         const categories = await axios.get(`${config.url}/api/posts/${id}/categories`);
         const comments = await axios.get(`${config.url}/api/posts/${id}/comments`);
-        if (comments.status !== 204) convertDate(comments.data);
+        if (comments.data.length > 0) convertDate(comments.data);
 
         for (let val of comments.data) {
             const commentLikes = await axios.get(`${config.url}/api/comments/${val.id}/like`);
@@ -166,10 +184,7 @@ export const getOnePost = (id, token) => async dispatch => {
             if (like && like.type === 'dislike') minusFlag = true;
         }
 
-        // setTimeout(() => {
-            dispatch(getOnePostSuccess({post: res.data, comments: comments.data, plus: plusFlag, minus: minusFlag}));
-        // }, 1000)
-
+        dispatch(getOnePostSuccess({post: res.data, comments: comments.data, plus: plusFlag, minus: minusFlag}));
     } catch (e) {
         //
     }
@@ -273,16 +288,20 @@ export const deleteLikeToComment = (id, post_id, token, comments) => async dispa
     }
 }
 
-export const createComment = (token, post_id, data, history, setOpen) => async dispatch => {
+export const createComment = (token, post_id, data, history, setData) => async dispatch => {
     try {
         const content = {content: data};
         const header = { headers: { Authorization: `Bearer ${token}` }}
-        await axios.post(`${config.url}/api/posts/${post_id}/comments`, content, header);
-        history.go(0);
+        const res = await axios.post(`${config.url}/api/posts/${post_id}/comments`, content, header);
+        convertDate(res.data);
+        res.data.likesCnt = 0;
+        res.data.commentsCnt = 0
 
-        dispatch(createCommentSuccess())
+        dispatch(createCommentSuccess(res.data))
+        setData('');
+
     } catch (err) {
-        setOpen(true);
+        console.log(err.response.data)
         dispatch(createCommentFailure(err.response.data.error))
     }
 }
@@ -325,4 +344,25 @@ export const createPost = (data, token, history, setOpen) => async dispatch => {
 
         dispatch(createPostFailure(error))
     }
+}
+
+export const closeCommentSuccess = () => async dispatch => {
+    dispatch(onCloseCommentSuccess());
+}
+
+export const closeCommentError = () => async dispatch => {
+    dispatch(onCloseCommentError());
+}
+
+export const deleteCommentById = (id, token) => async dispatch => {
+    try {
+        const header = {headers: {Authorization: `Bearer ${token}`}}
+        await axios.delete(`${config.url}/api/comments/${id}`, header);
+
+        dispatch(deleteCommentByIdSuccess(id))
+    } catch (err) {
+        console.log(err)
+    }
+
+    // dispatch(onCloseCommentError());
 }

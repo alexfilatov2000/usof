@@ -18,6 +18,7 @@ import GetSpecifiedPost from "./components/posts/getSpecifiedPost";
 import CreatePost from "./components/posts/createPost";
 import GetAllCategories from "./components/categories/getAllCategories";
 import CreateCategory from "./components/categories/createCategory";
+import GetSpecifiedCategory from "./components/categories/getSpecifiedCategory";
 
 
 function App() {
@@ -38,6 +39,7 @@ function App() {
                           <Route exact path="/posts/:id" component={GetSpecifiedPost}/>
 
                           <Route exact path="/categories" component={GetAllCategories}/>
+                          <Route exact path="/categories/:id" component={GetSpecifiedCategory}/>
 
                           <PublicRoute component={Register} exact path="/register" token={auth.token}/>
                           <PublicRoute component={Login} exact path="/login" token={auth.token}/>

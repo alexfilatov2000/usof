@@ -9,8 +9,8 @@ import { User } from '../entity/user';
 import { findOneUserById } from '../models/userModels';
 import { updateUserRatingModel } from '../models/commentModels';
 
-export const getAllPostsService = async (): Promise<Post[]> => {
-    const posts = await model.findAllPosts();
+export const getAllPostsService = async (query: any): Promise<Post[]> => {
+    const posts = await model.findAllPosts(query);
     if (!posts) throw new Error('No user found');
     return posts;
 };
@@ -24,7 +24,7 @@ export const getOnePostService = async (id: number): Promise<Post> => {
 export const getCommentsService = async (id: number): Promise<Comment[]> => {
     const comments = await model.findComments(id);
     // if no found comments (comments = [])
-    if (!comments.length) throw new CustomError('No comments found', 204);
+    // if (!comments.length) throw new CustomError('No comments found', 204);
     return comments;
 };
 
@@ -49,11 +49,11 @@ export const createPostService = async (bodyData: Post, user: User): Promise<voi
     await model.createPostModel(bodyData, user, categoriesArr);
 };
 
-export const createCommentService = async (bodyData: Comment, post_id: number, user: User): Promise<void> => {
+export const createCommentService = async (bodyData: Comment, post_id: number, user: User): Promise<Comment> => {
     const { error } = createCommentSchema.validate(bodyData);
     if (error) throw new CustomError(error.message, 400);
 
-    await model.createCommentModel(bodyData, post_id, user);
+    return model.createCommentModel(bodyData, post_id, user);
 };
 
 export const createLikeService = {

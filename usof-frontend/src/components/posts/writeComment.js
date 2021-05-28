@@ -4,12 +4,8 @@ import {Button, Container, makeStyles, Snackbar, TextField, Typography} from "@m
 import MuiAlert from '@material-ui/lab/Alert';
 import {useEffect, useState} from "react";
 import { useHistory } from "react-router-dom";
-
-
-function Alert(props) {
-    return <MuiAlert elevation={6} variant="filled" {...props} />;
-}
-
+import CreatedError from "./createComment/createdError";
+import CreatedSuccess from "./createComment/createdSuccess";
 
 const useStyles = makeStyles((theme) => ({
     form: {
@@ -18,13 +14,6 @@ const useStyles = makeStyles((theme) => ({
     answer: {
         margin: '30px 0'
     },
-    snackbar: {
-        position: "fixed",
-        left: 'calc(50% + 120px)',
-    },
-    alert: {
-        fontSize: 30
-    }
 }));
 
 const WriteComment = () => {
@@ -37,19 +26,11 @@ const WriteComment = () => {
     const user = useSelector(state => state.users);
 
     const [data, setData] = useState('');
-    const [open, setOpen] = useState(true);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        dispatch(createComment(auth.token, post.specPost.id, data, history, setOpen));
+        dispatch(createComment(auth.token, post.specPost.id, data, history, setData));
     }
-
-    const handleClose = (event, reason) => {
-        if (reason === 'clickaway') {
-            return;
-        }
-        setOpen(false);
-    };
 
     return (
         <div>
@@ -57,26 +38,16 @@ const WriteComment = () => {
                 Your Answer
             </Typography>
 
-            {post.error &&
-                <div>
-                    <Snackbar
-                        open={open}
-                        autoHideDuration={10000}
-                        onClose={handleClose}
-                        className={classes.snackbar}
-                    >
-                        <Alert onClose={handleClose} severity="error" className={classes.alert}>
-                            {post.error}
-                        </Alert>
-                    </Snackbar>
-                </div>
-            }
+            {post.error && <CreatedError/>}
+            {post.openCommentSuccess && <CreatedSuccess/>}
+
             <Container className={classes.form}>
                 <form noValidate autoComplete="off" onSubmit={handleSubmit}>
                     <TextField
                         label="Multiline"
                         multiline
                         rows={10}
+                        value={data}
                         variant="outlined"
                         fullWidth
                         onChange={(e) => setData(e.target.value)}

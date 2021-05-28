@@ -45,6 +45,11 @@ const useStyles = makeStyles((theme) => ({
     },
     root: {
         margin: 20
+    },
+    questions: {
+        fontSize: 16,
+        color: '#848d95',
+        marginTop: 20
     }
 }))
 
@@ -74,6 +79,7 @@ const GetAllCategories = () => {
                                         className={classes.button}
                                         type="submit"
                                         variant="contained"
+                                        onClick={() => history.push(`/categories/${item.id}`)}
                                     >
                                         {item.title}
                                     </Button>
@@ -82,6 +88,11 @@ const GetAllCategories = () => {
                                 <Typography className={classes.description}>
                                     {item.description}
                                 </Typography>
+
+                                <div className={classes.questions}>
+                                    <div>{item.cntOfPosts}</div>
+                                    <div>questions</div>
+                                </div>
 
                             </CardContent>
                         </Card>
