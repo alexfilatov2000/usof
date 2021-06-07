@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import Navbar from "./components/Navbar";
 import Register from "./components/auth/Register";
-import Home from "./Home";
+import Home from "./components/Home";
 import Login from "./components/auth/Login";
 import PasswordReset from "./components/auth/PasswordReset";
 import NewPassword from "./components/auth/NewPassword";
@@ -19,6 +19,9 @@ import CreatePost from "./components/posts/createPost";
 import GetAllCategories from "./components/categories/getAllCategories";
 import CreateCategory from "./components/categories/createCategory";
 import GetSpecifiedCategory from "./components/categories/getSpecifiedCategory";
+import ChangeName from "./components/users/updateUser/changeName";
+import ChangeLogin from "./components/users/updateUser/changeLogin";
+import ChangePassword from "./components/users/updateUser/changePassword";
 
 
 function App() {
@@ -48,6 +51,9 @@ function App() {
                           <PublicRoute component={VerifyEmail} exact path="/verify-email/:token" token={auth.token}/>
 
                           <UserRoute component={CreatePost} exact path="/postAsk" token={auth.token}/>
+                          <UserRoute component={ChangeName} exact path="/change/fullname" token={auth.token}/>
+                          <UserRoute component={ChangeLogin} exact path="/change/login" token={auth.token}/>
+                          <UserRoute component={ChangePassword} exact path="/change/password" token={auth.token}/>
 
                           <AdminRoute component={CreateUser} exact path="/userCreate" token={auth.token}/>
                           <AdminRoute component={CreateCategory} exact path="/categoryCreate" token={auth.token}/>

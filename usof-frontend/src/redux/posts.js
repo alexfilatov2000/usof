@@ -23,10 +23,12 @@ const slice = createSlice({
         postErr: { msg: null, title: false, content: false, categories: false },
         openCommentSuccess: false,
         openCommentError: false,
+        pageLength: 1
     },
     reducers: {
         getAllPostsSuccess: (state, action) => {
-            state.posts = action.payload;
+            state.posts = action.payload.data;
+            state.pageLength = action.payload.count;
             state.specPost = null;
             state.comments = [];
             state.error = null;
@@ -117,9 +119,9 @@ const {
     deleteCommentByIdSuccess,
     deleteLikeToCommentSuccess } = slice.actions;
 
-export const getAllPosts = (query) => async dispatch => {
+export const getAllPosts = (take = 5, skip = 0) => async dispatch => {
     try {
-        const posts = await axios.get(`${config.url}/api/posts`);
+        const posts = await axios.get(`${config.url}/api/posts?take=${take}&skip=${skip}`);
         const users = await axios.get(`${config.url}/api/users/`);
 
         convertDate(posts.data.data);
@@ -141,8 +143,7 @@ export const getAllPosts = (query) => async dispatch => {
             val.commentsCnt = comments.data.length;
         }
 
-        console.log(posts.data.data[0].categories);
-        dispatch(getAllPostsSuccess(posts.data.data));
+        dispatch(getAllPostsSuccess({data: posts.data.data, count: posts.data.count}));
 
     } catch (err) {
         // dispatch(loginFailure(err.response.data.error))

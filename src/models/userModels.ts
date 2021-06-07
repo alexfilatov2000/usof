@@ -31,14 +31,27 @@ export const createUser = async (data: User): Promise<User> => {
     return await user.save(userToBeSaved);
 };
 
-export const updateUser = async (id: number, data: User): Promise<void> => {
+export const updateFullNameModel = async (id: number, data: User): Promise<void> => {
     const user: Repository<User> = getManager().getRepository(User);
 
     await user.update(id, {
         full_name: data.full_name,
+    });
+};
+
+export const updateLoginModel = async (id: number, data: User): Promise<void> => {
+    const user: Repository<User> = getManager().getRepository(User);
+
+    await user.update(id, {
         login: data.login,
-        email: data.email,
-        password: data.password,
+    });
+};
+
+export const updatePasswordModel = async (id: number, data: any): Promise<void> => {
+    const user: Repository<User> = getManager().getRepository(User);
+
+    await user.update(id, {
+        password: data.newPassword,
     });
 };
 

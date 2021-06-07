@@ -1,6 +1,7 @@
 import {createSlice} from "@reduxjs/toolkit";
 import {config} from "../config";
 import axios from "axios";
+import {checkAndPutToken} from "../util/parseToken";
 
 /* ===|===|===|===|===|===|===|===|===|===|===|===|===|===|===|===| */
 /** @Reducers**/
@@ -11,7 +12,7 @@ const slice = createSlice({
         user: null,
         error: null,
         isPending: false,
-        token: localStorage.getItem('token')
+        token: checkAndPutToken()
     },
     reducers: {
         loginSuccess: (state, action) => {

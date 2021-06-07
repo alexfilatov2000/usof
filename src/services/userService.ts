@@ -2,12 +2,12 @@ import {
     findAllUsers,
     findOneUserById,
     createUser,
-    updateUser,
     deleteUserById,
-    addImageModel,
+    addImageModel, updateFullNameModel,
+    updateLoginModel, updatePasswordModel,
 } from '../models/userModels';
-import { createUserSchema, updateUserSchema } from '../lib/joi/joiShemaAuth';
-import { findUserByEmail, findUserByLogin, setHashPassword } from '../models/authModels';
+import {createUserSchema, updateFullNameSchema, updateLoginSchema, updatePasswordSchema} from '../lib/joi/joiShemaAuth';
+import {findUserByEmail, findUserByLogin, setHashPassword, verifyPassword} from '../models/authModels';
 import { User } from '../entity/user';
 
 export const getAllUsersService = async (): Promise<User[]> => {
@@ -39,18 +39,37 @@ export const createUserService = async (bodyData: User): Promise<User> => {
     return createUser(bodyData);
 };
 
-export const updateUserService = async (bodyData: User, id: number): Promise<User> => {
-    const { error } = updateUserSchema.validate(bodyData);
+export const updateFullNameService = async (bodyData: User, id: number): Promise<User> => {
+    const { error } = updateFullNameSchema.validate(bodyData);
     if (error) throw new Error(error.message);
 
-    if (await findUserByEmail(bodyData.email)) throw new Error('Email is already exist');
-    if (await findUserByLogin(bodyData.login)) throw new Error('Login is already exist');
-
-    bodyData.password = await setHashPassword(bodyData.password);
-
-    await updateUser(id, bodyData);
+    await updateFullNameModel(id, bodyData);
     return bodyData;
 };
+
+export const updateLoginService = async (bodyData: User, id: number): Promise<User> => {
+    const { error } = updateLoginSchema.validate(bodyData);
+    if (error) throw new Error(error.message);
+    if (await findUserByLogin(bodyData.login)) throw new Error('Login is already exist');
+
+    await updateLoginModel(id, bodyData);
+    return bodyData;
+};
+
+export const updatePasswordService = async (bodyData: any, id: number): Promise<User> => {
+    const { error } = updatePasswordSchema.validate(bodyData);
+    if (error) throw new Error(error.message);
+
+    const user = await findOneUserById(id);
+    if (!(await verifyPassword(user.password, bodyData.oldPassword))) {
+        throw new Error('Invalid old password');
+    }
+
+    bodyData.newPassword = await setHashPassword(bodyData.newPassword);
+    await updatePasswordModel(id, bodyData);
+    return bodyData;
+};
+
 
 export const deleteUserService = async (id: number): Promise<void> => {
     const user = await findOneUserById(id);

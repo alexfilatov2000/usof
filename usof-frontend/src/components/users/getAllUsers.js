@@ -6,6 +6,7 @@ import {DeleteOutlined} from "@material-ui/icons";
 import {Link, useHistory} from "react-router-dom";
 import {config} from "../../config";
 import {getRole} from "../../util/getRole";
+// import {checkToken} from "../../util/parseToken";
 
 const useStyles = makeStyles((theme) => ({
     image: {
@@ -29,7 +30,6 @@ const GetAllUsers = () => {
     const user = useSelector(state => state.users);
     const auth = useSelector(state => state.auth);
     const history = useHistory();
-
     const role = getRole(auth.token);
 
     useEffect(() => {

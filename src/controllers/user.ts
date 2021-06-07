@@ -3,9 +3,9 @@ import {
     getAllUsersService,
     getOneUserService,
     createUserService,
-    updateUserService,
     deleteUserService,
-    addImageService,
+    addImageService, updateFullNameService,
+    updateLoginService, updatePasswordService,
 } from '../services/userService';
 
 export default class UserController {
@@ -59,11 +59,28 @@ export default class UserController {
     }
 
     /* ===|===|===|===|===| patch '/api/users/:id' |===|===|===|===|===|===|===| */
-    //todo: come up with better logic
-    public static async updateUserData(ctx: Context): Promise<void> {
+    public static async updateFullName(ctx: Context): Promise<void> {
         try {
-            //update user (only admin has access?)
-            ctx.body = await updateUserService(ctx.request.body, ctx.params.id);
+            ctx.body = await updateFullNameService(ctx.request.body, ctx.params.id);
+        } catch (err) {
+            ctx.status = 400;
+            ctx.body = { error: err.message };
+        }
+    }
+
+    /* ===|===|===|===|===| patch '/api/users/:id' |===|===|===|===|===|===|===| */
+    public static async updateLogin(ctx: Context): Promise<void> {
+        try {
+            ctx.body = await updateLoginService(ctx.request.body, ctx.params.id);
+        } catch (err) {
+            ctx.status = 400;
+            ctx.body = { error: err.message };
+        }
+    }
+
+    public static async updatePassword(ctx: Context): Promise<void> {
+        try {
+            ctx.body = await updatePasswordService(ctx.request.body, ctx.params.id);
         } catch (err) {
             ctx.status = 400;
             ctx.body = { error: err.message };

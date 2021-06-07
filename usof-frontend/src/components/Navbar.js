@@ -33,6 +33,10 @@ const Navbar = ({ children }) => {
 
     const publicItems = [
         {
+            text: 'Home',
+            path: '/'
+        },
+        {
             text: 'Users',
             path: '/users'
         },

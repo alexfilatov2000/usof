@@ -1,9 +1,10 @@
 import {useDispatch, useSelector} from "react-redux";
 import {Card, CardContent, Grid, makeStyles, Typography, Box, Avatar, Button} from "@material-ui/core";
-import {useEffect} from "react";
+import {useEffect, useState} from "react";
 import posts, {getAllPosts} from "../../redux/posts";
 import {Link, useHistory} from "react-router-dom";
 import {config} from "../../config";
+import {Pagination} from "@material-ui/lab";
 
 const useStyles = makeStyles((theme) => ({
     votes: {
@@ -69,6 +70,9 @@ const useStyles = makeStyles((theme) => ({
     },
     category: {
         marginTop: 20
+    },
+    page: {
+        marginTop: 10
     }
 }))
 
@@ -79,6 +83,17 @@ const GetAllPosts = () => {
     const post = useSelector(state => state.posts);
     const user = useSelector(state => state.users)
     const auth = useSelector(state => state.auth);
+    const take = 5;
+
+    const [page, setPage] = useState(1);
+    console.log(page);
+
+    const handleChange = (event, value) => {
+        setPage(value);
+        const skip = value * take - take;
+
+        dispatch(getAllPosts(take, skip))
+    };
 
     useEffect(() => {
         dispatch(getAllPosts())
@@ -186,6 +201,12 @@ const GetAllPosts = () => {
                     </Grid>
                 ))}
             </Grid>
+
+            {post.posts.length > 0 &&
+            <div className={classes.page}>
+                <Pagination count={Math.ceil(post.pageLength/take)} page={page} onChange={handleChange}/>
+            </div>
+            }
 
         </div>
     );

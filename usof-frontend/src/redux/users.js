@@ -11,6 +11,7 @@ const slice = createSlice({
         users: [],
         specUser: null,
         error: null,
+        openDialog: false
     },
     reducers: {
         getUsersSuccess: (state, action) => {
@@ -20,6 +21,7 @@ const slice = createSlice({
         },
         getOneUserSuccess: (state, action) => {
             state.specUser = action.payload;
+            state.error = null;
         },
         deleteUserSuccess: (state, action) => {
             state.users = state.users.filter(user => user.id !== action.payload);
@@ -37,6 +39,22 @@ const slice = createSlice({
         },
         editIMGSuccess: (state, action) => {
             state.specUser.profile_picture = action.payload;
+            state.openDialog = false;
+            state.error = null;
+        },
+        removeSpecUserSuccess: (state, action) => {
+            state.specUser = null;
+        },
+        updateFullNameFailure: (state, action) => {
+            state.error = action.payload;
+        },
+        dialogOpenSuccess: (state, action) => {
+            state.openDialog = true;
+            state.error = null;
+        },
+        dialogCloseSuccess: (state, action) => {
+            state.openDialog = false;
+            state.error = null;
         },
     }
 })
@@ -46,7 +64,7 @@ export default slice.reducer;
 /* ===|===|===|===|===|===|===|===|===|===|===|===|===|===|===|===| */
 /** @Actions**/
 
-const { getUsersSuccess, getOneUserSuccess, deleteUserSuccess, createUserSuccess, createUserFailure, editIMGFailure, editIMGSuccess } = slice.actions;
+const { getUsersSuccess, getOneUserSuccess, deleteUserSuccess, createUserSuccess, createUserFailure, editIMGFailure, editIMGSuccess, removeSpecUserSuccess, updateFullNameFailure, dialogOpenSuccess, dialogCloseSuccess } = slice.actions;
 export const getUsers = () => async dispatch => {
     try {
         const res = await axios.get(`${config.url}/api/users`);
@@ -92,7 +110,7 @@ export const createUser = (user, token, history) => async dispatch => {
     }
 }
 
-export const editIMG = (img, token, history) => async dispatch => {
+export const editIMG = (img, token) => async dispatch => {
     try {
         const header = { headers: { Authorization: `Bearer ${token}` }}
         const res = await axios.post(`${config.url}/api/users/avatar`, img, header);
@@ -103,4 +121,56 @@ export const editIMG = (img, token, history) => async dispatch => {
         console.log(err.response.data);
         dispatch(editIMGFailure(err.response.data));
     }
+}
+
+export const removeSpecUser = () => async dispatch => {
+    try {
+        dispatch(removeSpecUserSuccess());
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+export const updateFullName = (full_name, id, token, history) => async dispatch => {
+    try {
+        console.log(token);
+        const header = { headers: { Authorization: `Bearer ${token}` }}
+        await axios.patch(`${config.url}/api/users/full_name/${id}`, { full_name }, header);
+
+        history.push('/');
+    } catch (err) {
+        dispatch(updateFullNameFailure(err.response.data.error));
+    }
+}
+
+export const updateLogin = (login, id, token, history) => async dispatch => {
+    try {
+        console.log(token);
+        const header = { headers: { Authorization: `Bearer ${token}` }}
+        await axios.patch(`${config.url}/api/users/login/${id}`, { login }, header);
+
+        history.push('/');
+    } catch (err) {
+        dispatch(updateFullNameFailure(err.response.data.error));
+    }
+}
+
+export const updatePassword = (oldPassword, newPassword, id, token, history) => async dispatch => {
+    try {
+        console.log(token);
+        const header = { headers: { Authorization: `Bearer ${token}` }}
+        await axios.patch(`${config.url}/api/users/password/${id}`, { oldPassword, newPassword }, header);
+
+        history.push('/');
+    } catch (err) {
+        dispatch(updateFullNameFailure(err.response.data.error));
+    }
+}
+
+export const dialogOpen = () => async dispatch => {
+    dispatch(dialogOpenSuccess())
+}
+
+export const dialogClose = () => async dispatch => {
+    dispatch(dialogCloseSuccess())
 }

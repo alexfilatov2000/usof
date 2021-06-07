@@ -39,3 +39,17 @@ export const updateUserSchema = Joi.object({
     password: Joi.string().min(6).required(),
     userByToken: Joi.any(),
 });
+
+export const updateFullNameSchema = Joi.object({
+    full_name: Joi.string().min(6).required(),
+});
+
+export const updateLoginSchema = Joi.object({
+    login: Joi.string().min(4).required(),
+});
+
+export const updatePasswordSchema = Joi.object({
+    oldPassword: Joi.string().min(6).required(),
+    newPassword: Joi.string().min(6).required(),
+});
+

@@ -62,7 +62,7 @@ const GetSpecifiedUser = () => {
         data.append('upload', myFile);
         console.log(data)
 
-        dispatch(editIMG(data, auth.token, history))
+        dispatch(editIMG(data, auth.token))
 
     }
 
