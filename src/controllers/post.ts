@@ -43,7 +43,6 @@ export default class PostController {
     public static async getAllCategories(ctx: Context): Promise<void> {
         try {
             //find all categories by post_id
-            console.log(111);
             ctx.body = await service.getCategoriesService(ctx.params.id);
         } catch (err) {
             ctx.body = { error: err.message };
@@ -96,7 +95,7 @@ export default class PostController {
             //create new like
             const data = await service.createLikeService.create(ctx.request.body, ctx.params.id, ctx.userByToken);
             //update user rating
-            await service.createLikeService.updateRating(ctx.request.body, ctx.params.id);
+            await service.createLikeService.updateRating(ctx.request.body, ctx.params.id, data);
             ctx.status = data.status;
             ctx.body = data.val;
         } catch (err) {

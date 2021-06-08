@@ -39,26 +39,36 @@ export const crateLikeService = {
 
         if (!like) {
             await createLikeModel(id, user, bodyData);
-            return {status: 201, val: 1};
+            if (bodyData.type === 'like') {
+                return { status: 201, val: 1, add: 1 };
+            } else {
+                return { status: 201, val: 1, add: -1 };
+            }
         } else {
             if (like.type === bodyData.type){
                 await deleteLikeUnderComment(like.id);
-                return {status: 200, val: 1};
+                if (bodyData.type === 'like') {
+                    return { status: 200, val: 1, add: -1 };
+                } else {
+                    return { status: 200, val: 1, add: 1 };
+                }
             } else {
                 await deleteLikeUnderComment(like.id);
                 await createLikeModel(id, user, bodyData);
-                return {status: 201, val: 2};
+                if (bodyData.type === 'like') {
+                    return { status: 201, val: 2, add: 2 };
+                } else {
+                    return { status: 201, val: 2, add: -2 };
+                }
             }
         }
 
 
     },
-    updateRating: async (comment_id: number, bodyData: Like_to_comment): Promise<void> => {
-        let cnt = -1;
-        if (!bodyData.type) cnt = 1;
+    updateRating: async (comment_id: number, bodyData: Like_to_comment, data: any): Promise<void> => {
         const comment = await findOneCommentModel(comment_id);
         const user = await findOneUserById(comment.user_id);
-        const rating = user.rating + cnt;
+        const rating = user.rating + data.add;
 
         await updateUserRatingModel(comment.user_id, rating);
     },

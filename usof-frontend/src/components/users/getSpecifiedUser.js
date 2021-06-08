@@ -8,13 +8,11 @@ import {compareIds} from "../../util/compareIds";
 
 const useStyles = makeStyles((theme) =>({
     image: {
-        // border: "1px solid black",
         padding: 10,
         flex: "1",
-        marginRight: 40
+        marginRight: 15
     },
     data: {
-        //border: "1px solid black",
         padding: 10,
         flex: "4"
     },
@@ -53,21 +51,7 @@ const GetSpecifiedUser = () => {
     const { id } = useParams();
     const edit = compareIds(auth.token, id)
 
-
-    const editPic = (e) => {
-        e.preventDefault();
-        console.dir(myFile);
-
-        const data = new FormData();
-        data.append('upload', myFile);
-        console.log(data)
-
-        dispatch(editIMG(data, auth.token))
-
-    }
-
     useEffect(() => {
-        console.log(id);
         dispatch(getOneUser(id))
     }, []);
 
@@ -90,52 +74,10 @@ const GetSpecifiedUser = () => {
 
     return (
         <div >
-            {/*{user.isPending && <div>загрузка</div>}*/}
             {user.specUser &&
             <Box display="flex" flexDirection="row" p={1} m={1}>
                 <Box className={classes.image}  p={1}>
-                    {/*<img src={`${config.url}/${user.specUser.profile_picture}`} alt="icon" className={classes.imgSize}/>*/}
                     <Avatar className={classes.imgSize} variant="rounded" alt="Remy Sharp" src={`${config.url}/${user.specUser.profile_picture}`} />
-                    {user.error && <div className={classes.error}>{user.error}</div>}
-                    {edit &&
-                    <form onSubmit={editPic}>
-                        <Button
-                            variant="contained"
-                            component="label"
-                        >
-                            Upload File
-                            <input
-                                hidden
-                                type="file"
-                                id="upload"
-                                name="upload"
-                                onChange={(e) => setMyFile(e.target.files[0])}
-                                required
-                            />
-                        </Button>
-
-                        {!myFile ? (
-                            <Button
-                                type="submit"
-                                color="secondary"
-                                variant="contained"
-                                fullWidth
-                                disabled
-                            >
-                                Edit
-                            </Button>
-                        ) : (
-                            <Button
-                                type="submit"
-                                color="secondary"
-                                variant="contained"
-                                fullWidth
-                            >
-                                Edit
-                            </Button>
-                        ) }
-                    </form>
-                    }
                 </Box>
 
                 <Box className={classes.data}  p={1}>

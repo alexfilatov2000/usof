@@ -15,7 +15,7 @@ export class Comment {
     content: string;
 
     @Column('int', { nullable: true })
-    post_id: number;
+    post_id: unknown;
 
     @Column('int', { nullable: true })
     user_id: number;

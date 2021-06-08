@@ -40,7 +40,7 @@ export default class CommentController {
             //create like by comment_id
             const data = await crateLikeService.create(ctx.params.id, ctx.userByToken, ctx.request.body);
             //update user rating
-            await crateLikeService.updateRating(ctx.params.id, ctx.request.body);
+            await crateLikeService.updateRating(ctx.params.id, ctx.request.body, data);
             ctx.status = data.status;
             ctx.body = data.val;
         } catch (err) {

@@ -60,31 +60,38 @@ export const createLikeService = {
     create: async (bodyData: Like_to_post, post_id: number, user: User): Promise<any> => {
         const { error } = createLikeSchema.validate(bodyData);
         if (error) throw new CustomError(error.message, 400);
-        //await model.createLikeModel(bodyData, post_id, user);
+
         const like = await model.findOneLikeUnderPost(post_id, user.id);
         if (!like) {
             await model.createLikeModel(bodyData, post_id, user);
-            return {status: 201, val: 1};
+            if (bodyData.type === 'like') {
+                return { status: 201, val: 1, add: 1 };
+            } else {
+                return { status: 201, val: 1, add: -1 };
+            }
         } else {
             if (like.type === bodyData.type){
                 await model.deleteLikeUnderPost(like.id);
-                return {status: 200, val: 1};
+                if (bodyData.type === 'like') {
+                    return { status: 200, val: 1, add: -1 };
+                } else {
+                    return { status: 200, val: 1, add: 1 };
+                }
             } else {
                 await model.deleteLikeUnderPost(like.id);
                 await model.createLikeModel(bodyData, post_id, user);
-                return {status: 201, val: 2};
+                if (bodyData.type === 'like') {
+                    return { status: 201, val: 2, add: 2 };
+                } else {
+                    return { status: 201, val: 2, add: -2 };
+                }
             }
         }
-
     },
-    updateRating: async (bodyData: Like_to_post, post_id: number): Promise<void> => {
+    updateRating: async (bodyData: Like_to_post, post_id: number, data: any): Promise<void> => {
         const post = await model.findOnePost(post_id);
         const user = await findOneUserById(post.user_id);
-        if (bodyData.type === 'dislike') {
-            await updateUserRatingModel(user.id, user.rating - 1);
-        } else {
-            await updateUserRatingModel(user.id, user.rating + 1);
-        }
+        await updateUserRatingModel(user.id, user.rating + data.add);
     },
 };
 

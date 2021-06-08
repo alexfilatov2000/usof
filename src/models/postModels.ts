@@ -56,8 +56,6 @@ export const createPostModel = async (data: Post, user: User, categories: Catego
     postToBeSaved.categories = categories;
     postToBeSaved.user_id = user.id;
     await postRepository.save(postToBeSaved);
-
-    console.dir(postToBeSaved);
 };
 
 export const createCommentModel = async (data: Comment, post_id: number, user: User): Promise<Comment> => {
