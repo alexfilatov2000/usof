@@ -6,12 +6,13 @@
   "scripts": {
     "start": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts",
     "myTest": "tsc && node ./dist/index.js",
-    "dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts",
+    "dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts && cd usof-frontend && npm start",
     "lint": "eslint '*/**/*.{js,ts,tsx}'",
     "lint:fix": "eslint '*/**/*.{js,ts,tsx}' --quiet --fix",
     "seed:config": "ts-node ./node_modules/typeorm-seeding/dist/cli.js config",
     "seed:run": "ts-node ./node_modules/typeorm-seeding/dist/cli.js seed",
-    "build": "tsc"
+    "build": "tsc",
+    "pm2": "tsc && pm2 start ./dist/index.js"
   },
   "author": "",
   "license": "ISC",
@@ -47,6 +48,7 @@
     "multer": "^1.4.2",
     "nodemailer": "^6.5.0",
     "pg": "^8.5.1",
+    "pm2": "^5.0.4",
     "typeorm": "^0.2.31",
     "typeorm-seeding": "^1.6.1"
   }
