@@ -1,9 +1,9 @@
 {
    "type": "postgres",
-   "host": "172.17.0.1",
+   "host": "database-2.c0arwfm4olgz.us-east-1.rds.amazonaws.com",
    "port": 5432,
    "username": "filatov",
-   "password": null,
+   "password": 11111111,
    "database": "usof",
    "synchronize": true,
    "logging": false,
