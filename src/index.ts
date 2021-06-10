@@ -7,7 +7,7 @@ import path from "path";
 import { postgresDB } from './db/pgDb';
 
 const app = new Koa();
-const PORT = process.env.PORT || 80;
+const PORT = process.env.PORT || 5000;
 
 postgresDB().catch((err) => err.message);
 app.use(serve(path.join(__dirname, '../public')));
