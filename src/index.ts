@@ -10,7 +10,7 @@ const app = new Koa();
 const PORT = process.env.PORT || 5000;
 
 postgresDB().catch((err) => err.message);
-app.use(serve(path.join(__dirname, 'public')));
+app.use(serve(path.join(__dirname, '../public')));
 app.use(bodyParser());
 app.use(cors());
 app.use(router.routes());

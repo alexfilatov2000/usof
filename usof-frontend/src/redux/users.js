@@ -78,6 +78,7 @@ export const getUsers = () => async dispatch => {
 export const getOneUser = (id) => async dispatch => {
     try {
         const res = await axios.get(`${config.url}/api/users/${id}`);
+        console.log(res.data);
         dispatch(getOneUserSuccess(res.data));
 
     } catch (err) {
