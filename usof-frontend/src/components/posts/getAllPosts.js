@@ -1,5 +1,15 @@
 import {useDispatch, useSelector} from "react-redux";
-import {Card, CardContent, Grid, makeStyles, Typography, Box, Avatar, Button} from "@material-ui/core";
+import {
+    Card,
+    CardContent,
+    Grid,
+    makeStyles,
+    Typography,
+    Box,
+    Avatar,
+    Button,
+    CircularProgress,
+} from '@material-ui/core';
 import {useEffect, useState} from "react";
 import posts, {getAllPosts} from "../../redux/posts";
 import {Link, useHistory} from "react-router-dom";
@@ -98,6 +108,8 @@ const GetAllPosts = () => {
     useEffect(() => {
         dispatch(getAllPosts())
     }, [dispatch])
+
+    if (post.posts.length === 0) return(<CircularProgress />)
 
     return (
         <div className={classes.root}>

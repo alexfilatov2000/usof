@@ -1,5 +1,5 @@
 import {useDispatch, useSelector} from "react-redux";
-import {Button, makeStyles, Typography, Box, Avatar, IconButton} from "@material-ui/core";
+import { Button, makeStyles, Typography, Box, Avatar, IconButton, CircularProgress } from '@material-ui/core';
 import {useEffect} from "react";
 import {getOnePost, addLike, deleteLike, deletePost} from "../../redux/posts";
 import {Link, useHistory, useParams} from "react-router-dom";
@@ -91,6 +91,7 @@ const useStyles = makeStyles((theme) => ({
         width: '100%',
     }
 }))
+
 
 const GetSpecifiedPost = () => {
     const classes = useStyles();

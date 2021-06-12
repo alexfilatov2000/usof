@@ -1,12 +1,21 @@
 import {useDispatch, useSelector} from "react-redux";
-import {Card, CardContent, Grid, IconButton, makeStyles, Typography, Box, Avatar} from "@material-ui/core";
+import {
+    Card,
+    CardContent,
+    Grid,
+    IconButton,
+    makeStyles,
+    Typography,
+    Box,
+    Avatar,
+    CircularProgress,
+} from '@material-ui/core';
 import {useEffect} from "react";
 import {getUsers, deleteUser} from "../../redux/users";
 import {DeleteOutlined} from "@material-ui/icons";
 import {Link, useHistory} from "react-router-dom";
 import {config} from "../../config";
 import {getRole} from "../../util/getRole";
-// import {checkToken} from "../../util/parseToken";
 
 const useStyles = makeStyles((theme) => ({
     image: {
@@ -22,6 +31,15 @@ const useStyles = makeStyles((theme) => ({
     iconPlace: {
         flex: 1
     },
+    card: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        flexDirection: 'column',
+        width: '100%',
+    },
+    root: {
+        margin: 25
+    }
 }));
 
 const GetAllUsers = () => {
@@ -37,25 +55,25 @@ const GetAllUsers = () => {
     }, [dispatch])
 
     const func = (id) => {
-        dispatch(deleteUser(id, auth.token))
+        dispatch(deleteUser (id, auth.token))
     }
 
+    if (user.users.length === 0) return(<CircularProgress />)
+
     return (
-        <div>
-            <Grid container spacing={3}>
+        <div className={classes.root}>
+            <Grid container spacing={3} alignItems="stretch">
                 {user.users.map(item => (
-                    <Grid item xs={12} md={6} lg={3} key={item.id}>
-                        <Card elevation={1}>
+                    <Grid item xs={12} md={6} lg={3} key={item.id} style={{display: 'flex'}}>
+                        <Card elevation={1} className={classes.card}>
                             <CardContent>
                                 <Box display="flex">
                                     <Box className={classes.imgPlace}>
-                                        {/*<img className={classes.image} src={`${config.url}/${item.profile_picture}`} alt="icon" />*/}
                                         <Avatar className={classes.image} alt="Remy Sharp" src={`${config.url}/${item.profile_picture}`} />
                                     </Box>
 
                                     <Box className={classes.dataPlace}>
                                         <Typography component="h5" variant="h5" color="textSecondary">
-                                            {/*<Link to={'/users/'+item.id}>{item.full_name}</Link>*/}
                                             <Link style={{textDecoration: 'none'}} to={'/users/'+item.id}>{item.full_name}</Link>
                                         </Typography>
 
@@ -65,11 +83,11 @@ const GetAllUsers = () => {
                                     </Box>
 
                                     {role === 'admin' &&
-                                        <Box>
-                                            <IconButton className={classes.iconPlace} onClick={() => func(item.id)}>
-                                                <DeleteOutlined />
-                                            </IconButton>
-                                        </Box>
+                                    <Box>
+                                        <IconButton className={classes.iconPlace} onClick={() => func(item.id)}>
+                                            <DeleteOutlined />
+                                        </IconButton>
+                                    </Box>
                                     }
 
                                 </Box>

@@ -1,5 +1,5 @@
 import {useDispatch, useSelector} from "react-redux";
-import {makeStyles, Typography }from "@material-ui/core";
+import { CircularProgress, makeStyles, Typography } from '@material-ui/core';
 import QuestionAnswerIcon from '@material-ui/icons/QuestionAnswer';
 import {useEffect} from "react";
 import { useHistory, useParams } from "react-router-dom";
@@ -46,7 +46,6 @@ const GetSpecifiedCategory = () => {
         dispatch(getSpecCategory(id));
         dispatch(getPostsByCategory(id));
     }, [dispatch])
-
 
     return (
         <div className={classes.root}>

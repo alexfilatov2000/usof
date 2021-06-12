@@ -9,8 +9,8 @@ import {
     Avatar,
     Button,
     IconButton,
-    Container
-} from "@material-ui/core";
+    Container, CircularProgress,
+} from '@material-ui/core';
 import {useEffect} from "react";
 import {Link, useHistory} from "react-router-dom";
 import {config} from "../../config";
@@ -66,6 +66,7 @@ const GetAllCategories = () => {
         dispatch(getAllCategories())
     }, [dispatch])
 
+    if (category.categories.length === 0) return(<CircularProgress />)
 
     return (
         <div className={classes.root}>
