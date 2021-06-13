@@ -1,7 +1,8 @@
 import { User } from '../../entity/user';
+import { config } from '../../config';
 
 export const getPasswordResetURL = (token: string): string => {
-    return `http://ec2-34-226-121-55.compute-1.amazonaws.com:3000/password-reset/${token}`;
+    return `${config.url}/password-reset/${token}`;
 };
 
 export const resetPasswordTemplate = (user: User, url: string): Record<'from' | 'to' | 'subject' | 'html', string> => {

@@ -1,7 +1,8 @@
 import { User } from '../../entity/user';
+import { config } from '../../config';
 
 export const getVerifyURL = (token: string): string => {
-    return `http://ec2-34-226-121-55.compute-1.amazonaws.com:3000/verify-email/${token}`;
+    return `${config.url}/verify-email/${token}`;
 };
 
 export const verifyTemplate = (user: User, url: string): Record<'from' | 'to' | 'subject' | 'html', string> => {
