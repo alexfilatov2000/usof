@@ -1,7 +1,7 @@
 import { User } from '../../entity/user';
 
 export const getPasswordResetURL = (token: string): string => {
-    return `http://localhost:3000/password-reset/${token}`;
+    return `http://ec2-34-226-121-55.compute-1.amazonaws.com:3000/password-reset/${token}`;
 };
 
 export const resetPasswordTemplate = (user: User, url: string): Record<'from' | 'to' | 'subject' | 'html', string> => {
